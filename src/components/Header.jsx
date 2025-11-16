@@ -20,9 +20,9 @@ const Header = () => {
     'Điều hòa'
   ]
   return (
-    <div className='w-full bg-white fixed'>
+    <div className='w-full bg-white fixed z-5000'>
       <div className='header-top bg-[#caddff] hidden lg:block'>
-        <div className='w-[95%] lg:w-[90%] mx-auto'>
+        <div className='w-[90%] lg:w-[90%] mx-auto'>
           <div className='w-full flex justify-between items-center h-[60px] text-slate-500'>
             <ul className='flex justify-start items-center gap-8 font-semibold text-black'>
               <li className='relative flex justify-center items-center gap-2 after:absolute after:h-[18px] after:w-px

@@ -3,9 +3,8 @@ import { MdEmail } from "react-icons/md";
 import { MdOutlinePhoneAndroid } from "react-icons/md";
 import { FaFacebookF, FaGithub, FaUser, FaLock, FaList, FaHeart, FaShoppingCart, FaFilter, FaSearch } from "react-icons/fa";
 import { SiZalo } from "react-icons/si";
-import { Link, useLocation } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 const Header = () => {
-  const { pathname } = useLocation();
   const [showSidebar, setShowSidebar] = useState(false);
   const [showCategory, setShowCategory] = useState(false);
   const user = true;
@@ -78,20 +77,20 @@ const Header = () => {
             <div className='w-full lg:w-9/12'>
               <div className='flex justify-between items-center '>
                 <ul className='justify-start items-center gap-8 uppercase font-bold hidden lg:flex'>
-                  <li className={`p-2 cursor-pointer whitespace-nowrap ${pathname === '/' ? 'text-[#059473]' : 'text-slate-600'}`}>
-                    Trang chủ
+                  <li>
+                    <NavLink to='/' className={({ isActive }) => `p-2 whitespace-nowrap ${isActive ? 'text-[#059473]' : 'text-slate-600'}`}>Trang chủ</NavLink>
                   </li>
-                  <li className={`p-2 cursor-pointer whitespace-nowrap ${pathname === '/shop' ? 'text-[#059473]' : 'text-slate-600'}`}>
-                    Cửa hàng
+                  <li>
+                    <NavLink to='/shops' className={({ isActive }) => `p-2 whitespace-nowrap ${isActive ? 'text-[#059473]' : 'text-slate-600'}`}>Cửa hàng</NavLink>
                   </li>
-                  <li className={`p-2 cursor-pointer whitespace-nowrap ${pathname === '/blog' ? 'text-[#059473]' : 'text-slate-600'}`}>
-                    Blog
+                  <li>
+                    <NavLink to='/blog' className={({ isActive }) => `p-2 whitespace-nowrap ${isActive ? 'text-[#059473]' : 'text-slate-600'}`}>Blog</NavLink>
                   </li>
-                  <li className={`p-2 cursor-pointer whitespace-nowrap ${pathname === '/about' ? 'text-[#059473]' : 'text-slate-600'}`}>
-                    Giới thiệu
+                  <li>
+                    <NavLink to='/about' className={({ isActive }) => `p-2 whitespace-nowrap ${isActive ? 'text-[#059473]' : 'text-slate-600'}`}>Giới thiệu</NavLink>
                   </li>
-                  <li className={`p-2 cursor-pointer whitespace-nowrap ${pathname === '/contact' ? 'text-[#059473]' : 'text-slate-600'}`}>
-                    Liên hệ
+                  <li>
+                    <NavLink to='/contact' className={({ isActive }) => `p-2 whitespace-nowrap ${isActive ? 'text-[#059473]' : 'text-slate-600'}`}>Liên hệ</NavLink>
                   </li>
 
                 </ul>
@@ -179,20 +178,20 @@ const Header = () => {
               }
             </div>
             <ul className='justify-start items-center gap-8 uppercase font-bold'>
-              <li className={`py-2 cursor-pointer ${pathname === '/' ? 'text-[#059473]' : 'text-slate-600'}`}>
-                Home
+              <li>
+                <NavLink to='/' className={({ isActive }) => `p-2 block whitespace-nowrap ${isActive ? 'text-[#059473]' : 'text-slate-600'}`}>Trang chủ</NavLink>
               </li>
-              <li className={`py-2 cursor-pointer ${pathname === '/shop' ? 'text-[#059473]' : 'text-slate-600'}`}>
-                Shop
+              <l>
+                <NavLink to='/shops' className={({ isActive }) => `p-2 block whitespace-nowrap ${isActive ? 'text-[#059473]' : 'text-slate-600'}`}>Cửa hàng</NavLink>
+              </l>
+              <li>
+                <NavLink to='/blog' className={({ isActive }) => `p-2 block whitespace-nowrap ${isActive ? 'text-[#059473]' : 'text-slate-600'}`}>Blog</NavLink>
               </li>
-              <li className={`py-2 cursor-pointer ${pathname === '/blog' ? 'text-[#059473]' : 'text-slate-600'}`}>
-                Blog
+              <li>
+                <NavLink to='/about' className={({ isActive }) => `p-2 block whitespace-nowrap ${isActive ? 'text-[#059473]' : 'text-slate-600'}`}>Giới thiệu</NavLink>
               </li>
-              <li className={`py-2 cursor-pointer ${pathname === '/about' ? 'text-[#059473]' : 'text-slate-600'}`}>
-                About Us
-              </li>
-              <li className={`py-2 cursor-pointer ${pathname === '/contact' ? 'text-[#059473]' : 'text-slate-600'}`}>
-                Contact Us
+              <li>
+                <NavLink to='/contact' className={({ isActive }) => `p-2 block whitespace-nowrap ${isActive ? 'text-[#059473]' : 'text-slate-600'}`}>Liên hệ</NavLink>
               </li>
             </ul>
             <div className='flex justify-start items-center gap-4 text-black'>
@@ -241,9 +240,6 @@ const Header = () => {
           </div>
         </div>
       </div>
-
-
-
     </div>
   );
 };

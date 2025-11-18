@@ -129,23 +129,26 @@ const Header = () => {
 
                 <div className='hidden 2xl:flex justify-center items-center'>
                   <div className='flex justify-center gap-7'>
-                    <div className='relative flex justify-center items-center cursor-pointer w-[35px] h-[35px] bg-[#e2e2e2] rounded-full'>
-                      <span className='text-xl text-green-500'><FaHeart /></span>
-                      <div className='absolute w-5 h-5 bg-red-500 rounded-full text-white -top-1.5 -right-2 flex justify-center items-center'>
-                        {
-                          wishlist_count
-                        }
+                    <Link>
+                      <div className='relative flex justify-center items-center cursor-pointer w-[35px] h-[35px] bg-[#e2e2e2] rounded-full'>
+                        <span className='text-xl text-green-500'><FaHeart /></span>
+                        <div className='absolute w-5 h-5 bg-red-500 rounded-full text-white -top-1.5 -right-2 flex justify-center items-center'>
+                          {
+                            wishlist_count
+                          }
+                        </div>
                       </div>
-                    </div>
-                    <div className='relative flex justify-center items-center cursor-pointer w-[35px] h-[35px] bg-[#e2e2e2] rounded-full'>
-                      <span className='text-xl text-green-500'><FaShoppingCart /></span>
-                      <div className='absolute w-5 h-5 bg-red-500 rounded-full text-white -top-1.5 -right-2 flex justify-center items-center'>
-                        {
-                          wishlist_count
-                        }
+                    </Link>
+                    <Link to='/cart'>
+                      <div className='relative flex justify-center items-center cursor-pointer w-[35px] h-[35px] bg-[#e2e2e2] rounded-full'>
+                        <span className='text-xl text-green-500'><FaShoppingCart /></span>
+                        <div className='absolute w-5 h-5 bg-red-500 rounded-full text-white -top-1.5 -right-2 flex justify-center items-center'>
+                          {
+                            wishlist_count
+                          }
+                        </div>
                       </div>
-                    </div>
-
+                    </Link>
                   </div>
                 </div>
 
@@ -181,9 +184,9 @@ const Header = () => {
               <li>
                 <NavLink to='/' className={({ isActive }) => `p-2 block whitespace-nowrap ${isActive ? 'text-[#059473]' : 'text-slate-600'}`}>Trang chủ</NavLink>
               </li>
-              <l>
+              <li>
                 <NavLink to='/shops' className={({ isActive }) => `p-2 block whitespace-nowrap ${isActive ? 'text-[#059473]' : 'text-slate-600'}`}>Cửa hàng</NavLink>
-              </l>
+              </li>
               <li>
                 <NavLink to='/blog' className={({ isActive }) => `p-2 block whitespace-nowrap ${isActive ? 'text-[#059473]' : 'text-slate-600'}`}>Blog</NavLink>
               </li>

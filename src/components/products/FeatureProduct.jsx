@@ -21,18 +21,18 @@ const FeatureProduct = () => {
 
                 <img src={`/images/products/${i + 1}.webp`} alt="" className='transition-all duration-500 group-hover:-translate-y-2 w-full h-[250px]' />
                 <ul className='flex w-full transition-all duration-700 justify-center items-center gap-2 absolute'>
-                  <li onClick={(e) => e.stopPropagation()} className='w-[30px] h-[30px] flex justify-center items-center bg-white cursor-pointer rounded-full hover:bg-[#059473] hover:text-white hover:rotate-720 transition-all opacity-0 group-hover:opacity-100 group-hover:-translate-y-15'>
+                  <Link className='w-[30px] h-[30px] flex justify-center items-center bg-white cursor-pointer rounded-full hover:bg-[#059473] hover:text-white hover:rotate-720 transition-all opacity-0 group-hover:opacity-100 group-hover:-translate-y-15'>
                     <FaRegHeart />
-                  </li>
-                  <li onClick={(e) => e.stopPropagation()} className='w-[30px] h-[30px] flex justify-center items-center bg-white cursor-pointer rounded-full hover:bg-[#059473] hover:text-white hover:rotate-720 transition-all opacity-0 group-hover:opacity-100 group-hover:-translate-y-15'>
+                  </Link>
+                  <Link to='/product/details/new' className='w-[30px] h-[30px] flex justify-center items-center bg-white cursor-pointer rounded-full hover:bg-[#059473] hover:text-white hover:rotate-720 transition-all opacity-0 group-hover:opacity-100 group-hover:-translate-y-15'>
                     <FaEye />
-                  </li>
-                  <li onClick={(e) => e.stopPropagation()} className='w-[30px] h-[30px] flex justify-center items-center bg-white cursor-pointer rounded-full hover:bg-[#059473] hover:text-white hover:rotate-720 transition-all opacity-0 group-hover:opacity-100 group-hover:-translate-y-15'>
+                  </Link>
+                  <Link className='w-[30px] h-[30px] flex justify-center items-center bg-white cursor-pointer rounded-full hover:bg-[#059473] hover:text-white hover:rotate-720 transition-all opacity-0 group-hover:opacity-100 group-hover:-translate-y-15'>
                     <RiShoppingCartLine />
-                  </li>
+                  </Link>
                 </ul>
               </div>
-              <Link to='/login'>
+              <Link to='/product/details/new'>
                 <div className='p-3 flex flex-col gap-1'>
                   <h3 className='text-base md:text-[18px] font-medium line-clamp-2'>OPPO Reno14 F 5G 12GB/256GB</h3>
                   <div className="mt-1">

@@ -11,11 +11,15 @@ import ShopProduct from '../components/products/ShopProduct';
 import Pagination from '../components/Pagination';
 import { useDispatch, useSelector } from 'react-redux';
 import { getProducts, query_products } from '../stores/reducers/productReducers';
+import { useParams, useSearchParams } from 'react-router-dom';
 
-const Shop = () => {
+const SearchProduct = () => {
   const dispatch = useDispatch();
-  const { categories } = useSelector(state => state.category);
+  const [searchParams] = useSearchParams();
+  const searchValue = searchParams.get('searchValue');
+  console.log(searchValue);
   const { latest_product, products_shop, totalProduct, parPage } = useSelector(state => state.product)
+
   useEffect(() => {
     dispatch(getProducts())
   }, [dispatch])
@@ -23,27 +27,20 @@ const Shop = () => {
   const [state, setState] = useState({ values: [0, 50000000] })
   const [rating, setRating] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [category, setCategory] = useState('');
   const [sortPrice, setSortPrice] = useState('');
-
-  const queryCategory = (e, value) => {
-    if (e.target.checked) {
-      setCategory(value);
-    } else {
-      setCategory('')
-    }
-  }
+  const [category,] = useState('');
   // query product
   useEffect(() => {
     dispatch(query_products({
       low: state.values[0],
       high: state.values[1],
-      category,
+      category: '',
       rating,
       sortPrice,
-      pageNumber: currentPage
+      pageNumber: currentPage,
+      searchValue
     }))
-  }, [state.values, category, rating, sortPrice, currentPage, dispatch])
+  }, [state.values, searchValue, category, rating, sortPrice, currentPage, dispatch])
   return (
     <div>
       <Header />
@@ -56,15 +53,6 @@ const Shop = () => {
           <div className="flex w-full flex-wrap">
             <div className="w-full sm:w-3/12 pr-0 xl:pr-7">
               <div className={`${filter ? 'h-auto mb-0' : 'h-0 overflow-hidden mb-6'} sm:h-auto sm:overflow-visible sm:mb-0`}>
-                <h2 className='text-3xl font-bold text-slate-600 mb-3'>Danh mục</h2>
-                <div className='py-2'>
-                  {categories.map((item, index) => (
-                    <div key={index} className='flex justify-start items-center gap-2 py-1'>
-                      <input type="checkbox" checked={category === item.category_name ? true : false} onChange={(e) => queryCategory(e, item.category_name)} id={item._id} />
-                      <label htmlFor={item._id} className='text-slate-600 cursor-pointer'>{item.category_name}</label>
-                    </div>
-                  ))}
-                </div>
                 <div className='py-2 flex flex-col gap-5'>
                   <h2 className='text-3xl font-bold text-slate-600'>Giá</h2>
                   <Range
@@ -186,4 +174,4 @@ const Shop = () => {
   );
 };
 
-export default Shop;
+export default SearchProduct;

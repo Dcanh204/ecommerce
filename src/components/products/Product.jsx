@@ -4,11 +4,7 @@ import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
 import Carousel from 'react-multi-carousel';
 import "react-multi-carousel/lib/styles.css";
 import { Link } from 'react-router-dom';
-const Product = ({ title }) => {
-  const products = [
-    [1, 2, 3],
-    [4, 5, 6]
-  ]
+const Product = ({ title, products }) => {
   const responsive = {
     all: {
       breakpoint: { max: 4000, min: 0 },
@@ -37,6 +33,11 @@ const Product = ({ title }) => {
     )
   }
 
+  const formatPrice = (price) => {
+    const rounded = Math.round(price / 1000) * 1000;
+    return new Intl.NumberFormat('vi-VN').format(rounded) + '₫';
+  }
+
 
   return (
     <div className='flex flex-col-reverse gap-8'>
@@ -55,20 +56,34 @@ const Product = ({ title }) => {
               <div key={index} className='flex flex-col justify-start gap-8'>
                 {
                   item.map((p, i) => <Link className='flex justify-start items-start gap-3' to='#' key={i}>
-                    <img className='w-[130px] h-[130px]' src={`/images/products/${p}.webp`} alt="" />
+                    <img className='w-[130px] h-[130px]' src={p.images[0]} alt="" />
                     <div className='flex flex-col justify-start items-start gap-1'>
-                      <h3 className='text-base md:text-[18px] font-medium line-clamp-2'>OPPO Reno14 F 5G 12GB/256GB</h3>
-                      <p className="text-red-500 font-bold text-lg">
-                        8.130.000₫
-                      </p>
-                      <div>
-                        <span className='text-gray-400 line-through text-base'>8.830.000₫</span>
-                        <span className='text-red-500 font-medium text-base'> -11%</span>
-                      </div>
+                      <h3 className='text-base md:text-[18px] font-medium line-clamp-2'>{p.name}</h3>
+                      {
+                        p.discount > 0
+                          ?
+                          <>
+                            <p className="text-red-500 font-bold text-lg">
+                              {formatPrice(p.price - (p.price * p.discount) / 100)}
+                            </p>
+                            <div>
+                              <span className='text-gray-400 line-through text-base'>{formatPrice(p.price)}</span>
+                              <span className='text-red-500 font-medium text-base'> -{p.discount}%</span>
+                            </div>
+                          </>
+                          :
+                          <p className="text-red-500 font-bold text-lg">
+                            {formatPrice(p.price)}
+                          </p>
+                      }
+
                       <div className="flex items-center gap-1 mt-1">
-                        <FaStar className='text-sm text-yellow-400' />
-                        <span className="text-sm font-semibold text-gray-700">4.9</span>
-                        <span className="text-xs text-gray-500">· Đã bán 11,7k</span>
+                        {p.rating > 0 ? (
+                          <>
+                            <FaStar className='text-sm text-yellow-400' />
+                            <span className="text-sm font-semibold text-gray-700">{p.rating}</span>
+                          </>
+                        ) : ''}
                       </div>
                     </div>
                   </Link>)

@@ -2,7 +2,12 @@ import React from 'react';
 import { FaEye, FaRegHeart, FaStar } from "react-icons/fa";
 import { RiShoppingCartLine } from 'react-icons/ri';
 import { Link } from 'react-router-dom';
-const FeatureProduct = () => {
+const FeatureProduct = ({ products }) => {
+
+  const formatPrice = (price) => {
+    const rounded = Math.round(price / 1000) * 1000;
+    return new Intl.NumberFormat('vi-VN').format(rounded) + '₫';
+  }
   return (
     <div className='w-[90%] mx-auto flex flex-wrap '>
       <div className='w-full flex justify-center items-center flex-col text-slate-600 pb-5 md:pb-[45px]'>
@@ -12,14 +17,17 @@ const FeatureProduct = () => {
 
       <div className='w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2 md:gap-4'>
         {
-          [1, 2, 3, 4, 5, 6].map((item, i) => (
+          products.map((item, i) => (
             <div key={i} className='border border-[#e9ebf0] overflow-hidden group max-h-[450px] p-2 rounded-lg'>
               <div className='relative'>
-                <div className='flex justify-center items-center absolute left-2 top-2 bg-red-500 rounded-full w-[38px] h-[38px] text-white'>
-                  8%
-                </div>
+                {
+                  item.discount ? <div className='flex justify-center items-center absolute left-2 top-2 bg-red-500 rounded-full w-[38px] h-[38px] text-white'>
+                    {item.discount}%
+                  </div>
+                    : ''
+                }
 
-                <img src={`/images/products/${i + 1}.webp`} alt="" className='transition-all duration-500 group-hover:-translate-y-2 w-full h-[250px]' />
+                <img src={item?.images[0]} alt="" className='transition-all duration-500 group-hover:-translate-y-2 w-full h-[250px]' />
                 <ul className='flex w-full transition-all duration-700 justify-center items-center gap-2 absolute'>
                   <Link className='w-[30px] h-[30px] flex justify-center items-center bg-white cursor-pointer rounded-full hover:bg-[#059473] hover:text-white hover:rotate-720 transition-all opacity-0 group-hover:opacity-100 group-hover:-translate-y-15'>
                     <FaRegHeart />
@@ -34,21 +42,34 @@ const FeatureProduct = () => {
               </div>
               <Link to='/product/details/new'>
                 <div className='p-3 flex flex-col gap-1'>
-                  <h3 className='text-base md:text-[18px] font-medium line-clamp-2'>OPPO Reno14 F 5G 12GB/256GB</h3>
+                  <h3 className='text-base md:text-[18px] font-medium line-clamp-2'>{item.name}</h3>
                   <div className="mt-1">
-                    <p className="text-red-500 font-bold text-lg">
-                      8.130.000₫
-                    </p>
-                    <div>
-                      <span className='text-gray-400 line-through text-base'>8.830.000₫</span>
-                      <span className='text-red-500 font-medium text-base'> -11%</span>
-                    </div>
+                    {item.discount > 0 ?
+                      <>
+                        <p className="text-red-500 font-bold text-lg">
+                          {formatPrice(item.price - (item.price * item.discount) / 100)}
+                        </p>
+                        <div>
+                          <span className='text-gray-400 line-through text-base'>{formatPrice(item.price)}</span>
+                          <span className='text-red-500 font-medium text-base'> -{item.discount}%</span>
+                        </div>
+                      </>
+                      :
+                      <p className="text-red-500 font-bold text-lg">
+                        {formatPrice(item.price)}
+                      </p>
+                    }
+
                   </div>
-                  <div className="flex items-center gap-1 mt-1">
-                    <FaStar className='text-sm text-yellow-400' />
-                    <span className="text-sm font-semibold text-gray-700">4.9</span>
-                    <span className="text-xs text-gray-500">· Đã bán 11,7k</span>
-                  </div>
+                  {
+                    item.rating
+                      ? <div className="flex items-center gap-1 mt-1">
+                        <FaStar className='text-sm text-yellow-400' />
+                        <span className="text-sm font-semibold text-gray-700">{item.rating}</span>
+                      </div>
+                      : ''
+                  }
+
                 </div>
               </Link>
 

@@ -3,21 +3,23 @@ import { MdEmail } from "react-icons/md";
 import { MdOutlinePhoneAndroid } from "react-icons/md";
 import { FaFacebookF, FaGithub, FaUser, FaLock, FaList, FaHeart, FaShoppingCart, FaFilter, FaSearch } from "react-icons/fa";
 import { SiZalo } from "react-icons/si";
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 const Header = () => {
+  const navigation = useNavigate();
+  const { categories } = useSelector(state => state.category);
   const [showSidebar, setShowSidebar] = useState(false);
   const [showCategory, setShowCategory] = useState(false);
+  const [searchValue, setSearchValue] = useState('')
   const user = true;
   const wishlist_count = 3;
-  const categories = [
-    'Điện thoại',
-    'Tivi',
-    'Đồng Hồ',
-    'Tủ lạnh',
-    'Máy tính',
-    'Máy giặt',
-    'Điều hòa'
-  ]
+
+  const search = (e) => {
+    e.preventDefault();
+    if (searchValue.trim() !== '') {
+      navigation(`/search?searchValue=${searchValue}`)
+    }
+  }
   return (
     <div className='w-full bg-white fixed z-5000'>
       <div className='header-top bg-[#caddff] hidden lg:block'>
@@ -108,7 +110,7 @@ const Header = () => {
                           categories.map((item, index) => {
                             return (
                               <li key={index} className='flex justify-start items-center gap-2 px-3 py-1.5 hover:bg-amber-500 hover:text-white cursor-pointer'>
-                                <Link>{item}</Link>
+                                <Link to={`/${item.slug}`}>{item.category_name}</Link>
                               </li>
                             )
                           })
@@ -118,8 +120,8 @@ const Header = () => {
                   </div>
 
                   <div className='relative'>
-                    <form>
-                      <input className='w-[300px] lg:w-[200px] 2xl:min-w-[200px] pl-2 pr-9 py-1 border border-slate-700 outline-none focus:border-indigo-400 bg-transparent rounded-r-md' type="text" name='search' placeholder='Tìm kiếm...' />
+                    <form onSubmit={search}>
+                      <input onChange={(e) => setSearchValue(e.target.value)} className='w-[300px] lg:w-[200px] 2xl:min-w-[200px] pl-2 pr-9 py-1 border border-slate-700 outline-none focus:border-indigo-400 bg-transparent rounded-r-md' type="text" name='search' placeholder='Tìm kiếm...' />
                       <button className='absolute top-2 right-2 text-slate-700 cursor-pointer'><FaSearch /></button>
                     </form>
                   </div>
@@ -227,7 +229,7 @@ const Header = () => {
                   categories.map((item, index) => {
                     return (
                       <li key={index} className='flex justify-start items-center gap-2 px-3 py-1.5 hover:bg-amber-500 hover:text-white cursor-pointer'>
-                        <Link>{item}</Link>
+                        <Link to={`/${item.slug}`}>{item.category_name}</Link>
                       </li>
                     )
                   })
@@ -236,8 +238,8 @@ const Header = () => {
             </div>
           </div>
           <div className='relative'>
-            <form>
-              <input className='max-w-[300px] pl-2 pr-9 py-1 border border-slate-700 outline-none focus:border-indigo-400 bg-transparent rounded-r-md' type="text" name='search' placeholder='Tìm kiếm...' />
+            <form onSubmit={search}>
+              <input onChange={(e) => setSearchValue(e.target.value)} className='max-w-[300px] pl-2 pr-9 py-1 border border-slate-700 outline-none focus:border-indigo-400 bg-transparent rounded-r-md' type="text" name='search' placeholder='Tìm kiếm...' />
               <button className='absolute top-2 right-2 text-slate-700 cursor-pointer'><FaSearch /></button>
             </form>
           </div>

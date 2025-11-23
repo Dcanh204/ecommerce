@@ -45,7 +45,7 @@ const Register = () => {
                     <span onClick={() => setShowPass(!showPass)} className='cursor-pointer absolute right-3 top-10'><FaEye /></span>
                   </div>
                   <div className='flex justify-center items-center mt-6'>
-                    <button className='px-10 py-2 bg-[#059473] text-white rounded-md cursor-pointer'>Đăng ký</button>
+                    <button className='px-10 py-2 w-full bg-[#059473] text-white rounded-md cursor-pointer'>Đăng ký</button>
                   </div>
                 </form>
                 <div className='flex justify-center items-center my-3'>

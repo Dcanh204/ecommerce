@@ -41,7 +41,7 @@ const Login = () => {
                     <span onClick={() => setShowPass(!showPass)} className='cursor-pointer absolute right-3 top-10'><FaEye /></span>
                   </div>
                   <div className='flex justify-center items-center mt-6'>
-                    <button className='px-10 py-2 bg-[#059473] text-white rounded-md cursor-pointer'>Đăng Nhập</button>
+                    <button className='w-full px-10 py-2 bg-[#059473] text-white rounded-md cursor-pointer'>Đăng Nhập</button>
                   </div>
                 </form>
                 <div className='flex justify-center items-center my-3'>
@@ -50,10 +50,10 @@ const Login = () => {
                   <div className='h-px w-[95%] bg-slate-200'></div>
                 </div>
                 <div className='flex justify-center items-center gap-3'>
-                  <button type='button' className='w-[135px] h-[35px] flex justify-center items-center bg-orange-700 rounded-md cursor-pointer hover:shadow-orange-700/50 shadow-lg overflow-hidden text-white'>
+                  <button type='button' className='w-[50%] h-[35px] flex justify-center items-center bg-orange-700 rounded-md cursor-pointer hover:shadow-orange-700/50 shadow-lg overflow-hidden text-white'>
                     <span></span><FaGoogle />
                   </button>
-                  <button type="button" className='text-white w-[135px] h-[35px] flex justify-center items-center bg-blue-700 rounded-md cursor-pointer hover:shadow-blue-700/50 shadow-lg overflow-hidden'>
+                  <button type="button" className='text-white w-[50%] h-[35px] flex justify-center items-center bg-blue-700 rounded-md cursor-pointer hover:shadow-blue-700/50 shadow-lg overflow-hidden'>
                     <FaFacebook />
                   </button>
                 </div>

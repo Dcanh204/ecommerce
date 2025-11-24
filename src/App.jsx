@@ -11,6 +11,7 @@ import { useDispatch } from 'react-redux';
 import { getCategory } from './stores/reducers/categoryReducers';
 import CategoryShop from './pages/CategoryShop';
 import SearchProduct from './pages/SearchProduct';
+import NotFound from './pages/NotFound';
 
 const App = () => {
   const dispatch = useDispatch()
@@ -26,9 +27,11 @@ const App = () => {
         <Route path='/shipping' element={<Shipping />} />
         <Route path='/product/details/:slug' element={<ProductDetails />} />
         <Route path='/login' element={<Login />} />
-        <Route path='/:slug' element={<CategoryShop />} />
+        <Route path='/category/:slug' element={<CategoryShop />} />
         <Route path='/search' element={<SearchProduct />} />
         <Route path='/register' element={<Register />} />
+        <Route path='*' element={<NotFound />} />
+
 
 
       </Routes>

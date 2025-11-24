@@ -8,12 +8,11 @@ import { useSelector } from 'react-redux';
 const Header = () => {
   const navigation = useNavigate();
   const { categories } = useSelector(state => state.category);
+  const { userInfo } = useSelector(state => state.auth)
   const [showSidebar, setShowSidebar] = useState(false);
   const [showCategory, setShowCategory] = useState(false);
   const [searchValue, setSearchValue] = useState('')
-  const user = true;
   const wishlist_count = 3;
-
   const search = (e) => {
     e.preventDefault();
     if (searchValue.trim() !== '') {
@@ -45,16 +44,16 @@ const Header = () => {
               </div>
               <div className='h-[18px] w-px bg-[#afafaf]'></div>
               {
-                user
+                userInfo
                   ?
                   <Link to='/dashboard' className='flex justify-center items-center gap-2 cursor-pointer text-black'>
                     <span><FaUser /></span>
-                    <span>Đình Cảnh</span>
+                    <span>{userInfo.name}</span>
                   </Link>
                   :
-                  <Link to='/login' className='flex justify-center items-center gap-2 cursor-pointer text-black text-sm'>
+                  <Link to='/login' className='flex justify-center items-center gap-2 cursor-pointer text-black'>
                     <span><FaLock /></span>
-                    <span>Login</span>
+                    <span>Đăng nhập</span>
                   </Link>
               }
             </div>
@@ -110,7 +109,7 @@ const Header = () => {
                           categories.map((item, index) => {
                             return (
                               <li key={index} className='flex justify-start items-center gap-2 px-3 py-1.5 hover:bg-amber-500 hover:text-white cursor-pointer'>
-                                <Link to={`/${item.slug}`}>{item.category_name}</Link>
+                                <Link to={`/category/${item.slug}`}>{item.category_name}</Link>
                               </li>
                             )
                           })
@@ -169,16 +168,16 @@ const Header = () => {
             </Link>
             <div className='flex justify-start items-center'>
               {
-                user
+                userInfo
                   ?
                   <Link to='/dashboard' className='flex justify-center items-center gap-2 cursor-pointer text-black'>
                     <span><FaUser /></span>
-                    <span>Đình Cảnh</span>
+                    <span>{userInfo.name}</span>
                   </Link>
                   :
-                  <Link to='/login' className='flex justify-center items-center gap-2 cursor-pointer text-black text-sm'>
+                  <Link to='/login' className='flex justify-center items-center gap-2 cursor-pointer text-black'>
                     <span><FaLock /></span>
-                    <span>Login</span>
+                    <span>Đăng nhập</span>
                   </Link>
               }
             </div>

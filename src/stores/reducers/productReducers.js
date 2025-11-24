@@ -13,17 +13,6 @@ export const getProducts = createAsyncThunk(
   }
 )
 
-export const price_range_product = createAsyncThunk(
-  'product/price_range_product',
-  async (_, { rejectWithValue }) => {
-    try {
-      const { data } = await api.get('/home/price-range-product');
-      return data;
-    } catch (error) {
-      return rejectWithValue(error.response.data);
-    }
-  }
-)
 
 export const query_products = createAsyncThunk(
   'product/query_products',

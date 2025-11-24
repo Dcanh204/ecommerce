@@ -50,7 +50,7 @@ const ShopProduct = ({ products }) => {
                           {formatPrice(item.price - (item.price * item.discount) / 100)}
                         </p>
                         <div>
-                          <span className='text-gray-400 line-through text-base'>{item.price}</span>
+                          <span className='text-gray-400 line-through text-base'>{formatPrice(item.price)}</span>
                           <span className='text-red-500 font-medium text-base'> -{item.discount}%</span>
                         </div>
                       </>

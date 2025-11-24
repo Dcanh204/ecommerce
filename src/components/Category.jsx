@@ -45,7 +45,7 @@ const Category = () => {
         transitionDuration={500}
       >
         {
-          categories.map((c, i) => <Link to={`/${c.slug}`} className='h-[185px] block border border-slate-100' key={i}>
+          categories.map((c, i) => <Link to={`/category/${c.slug}`} className='h-[185px] block border border-slate-100' key={i}>
             <div className='w-full h-full relative p-3'>
               <img src={c.image} alt="" />
               <div className='absolute bottom-4 w-full mx-auto font-bold left-0 flex justify-center items-center'>

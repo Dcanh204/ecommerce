@@ -1,9 +1,15 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from '../components/Header';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaEye } from 'react-icons/fa';
-
+import { useDispatch, useSelector } from 'react-redux';
+import { customer_register, messageClear } from '../stores/reducers/authReducers';
+import { ClipLoader } from "react-spinners";
+import toast from 'react-hot-toast';
 const Register = () => {
+  const dispatch = useDispatch();
+  const navigation = useNavigate();
+  const { loading, successMessage, errorMessage, userInfo } = useSelector(state => state.auth)
   const [showPass, setShowPass] = useState(false)
   const [state, setState] = useState({
     name: '',
@@ -18,8 +24,22 @@ const Register = () => {
       [name]: value
     })
   }
+  useEffect(() => {
+    if (successMessage) {
+      toast.success(successMessage);
+      dispatch(messageClear());
+    }
+    if (errorMessage) {
+      toast.error(errorMessage);
+      dispatch(messageClear());
+    }
+    if (userInfo) {
+      navigation('/')
+    }
+  }, [successMessage, errorMessage, dispatch, userInfo, navigation])
   const register = (e) => {
     e.preventDefault();
+    dispatch(customer_register(state))
   }
   return (
     <div>
@@ -45,7 +65,9 @@ const Register = () => {
                     <span onClick={() => setShowPass(!showPass)} className='cursor-pointer absolute right-3 top-10'><FaEye /></span>
                   </div>
                   <div className='flex justify-center items-center mt-6'>
-                    <button className='px-10 py-2 w-full bg-[#059473] text-white rounded-md cursor-pointer'>Đăng ký</button>
+                    <button disabled={loading} className='px-10 py-2 w-full bg-[#059473] text-white rounded-md cursor-pointer'>
+                      {loading ? <ClipLoader color='white' /> : 'Đăng ký'}
+                    </button>
                   </div>
                 </form>
                 <div className='flex justify-center items-center my-3'>

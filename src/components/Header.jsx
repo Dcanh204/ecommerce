@@ -4,8 +4,10 @@ import { MdOutlinePhoneAndroid } from "react-icons/md";
 import { FaFacebookF, FaGithub, FaUser, FaLock, FaList, FaHeart, FaShoppingCart, FaFilter, FaSearch } from "react-icons/fa";
 import { SiZalo } from "react-icons/si";
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { get_cart_product } from '../stores/reducers/cartReducers';
 const Header = () => {
+  const dispatch = useDispatch();
   const navigation = useNavigate();
   const categoryRef = useRef(null)
   const { categories } = useSelector(state => state.category);
@@ -21,6 +23,11 @@ const Header = () => {
       navigation(`/search?searchValue=${searchValue}`)
     }
   }
+  useEffect(() => {
+    if (userInfo) {
+      dispatch(get_cart_product(userInfo.id))
+    }
+  }, [dispatch, userInfo])
   // đóng menu
   useEffect(() => {
     const handleClickOutSide = (e) => {

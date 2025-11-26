@@ -77,7 +77,7 @@ const Login = () => {
                 </form>
                 <div className='flex justify-center items-center my-3'>
                   <div className='h-px w-[95%] bg-slate-200'></div>
-                  <div className='px-3 text-slate-600'>Hoặc</div>
+                  <div className='px-3 text-sm text-slate-600'>Hoặc</div>
                   <div className='h-px w-[95%] bg-slate-200'></div>
                 </div>
                 <div className='flex justify-center items-center gap-3'>
@@ -89,13 +89,13 @@ const Login = () => {
                   </button>
                 </div>
                 <div className='flex justify-center items-center gap-3 mt-4'>
-                  <p>Bạn chưa có tài khoản ? </p>
-                  <Link to='/register' className='cursor-pointer text-blue-500 font-medium'>Đăng Ký</Link>
+                  <p className='text-sm'>Bạn chưa có tài khoản ? </p>
+                  <Link to='/register' className='cursor-pointer text-blue-500 font-medium text-sm'>Đăng Ký</Link>
                 </div>
               </div>
             </div>
             <div className='hidden md:block w-full h-full py-4 pr-4'>
-              <img className='w-full' src="/images/login.jpg" alt="login" />
+              <img className='w-full h-full' src="/images/login.jpg" alt="login" />
             </div>
           </div>
 

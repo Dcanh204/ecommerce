@@ -11,7 +11,7 @@ const Banner = () => {
     }
   };
   return (
-    <div className='w-full pt-28 lg:pt-33'>
+    <div className='w-full pt-28'>
       <div className='w-[90%] lg:w-[90%] mx-auto'>
         <div className='w-full flex flex-wrap gap-8 lg:gap-0'>
           <div className='w-full'>

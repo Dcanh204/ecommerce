@@ -54,7 +54,7 @@ const CategoryShop = () => {
             <div className="w-full sm:w-3/12 pr-0 xl:pr-7">
               <div className={`${filter ? 'h-auto mb-0' : 'h-0 overflow-hidden mb-6'} sm:h-auto sm:overflow-visible sm:mb-0`}>
                 <div className='py-2 flex flex-col gap-5'>
-                  <h2 className='text-3xl font-bold text-slate-600'>Giá</h2>
+                  <h2 className='text-2xl font-bold text-slate-600'>Giá</h2>
                   <Range
                     step={10000}
                     min={0}
@@ -62,7 +62,7 @@ const CategoryShop = () => {
                     values={state.values}
                     onChange={(values) => setState({ values })}
                     renderTrack={({ props, children }) => (
-                      <div {...props} className='max-w-[350px] h-1.5 bg-slate-200 rounded-full'>
+                      <div {...props} className='max-w-[300px] h-1.5 bg-slate-200 rounded-full'>
                         {children}
                       </div>
                     )}
@@ -71,47 +71,47 @@ const CategoryShop = () => {
                     )}
                   />
                 </div>
-                <span className='text-slate-800 text-lg font-bold'>{Math.floor(state.values[0]).toLocaleString('vi-VN')}đ - {Math.floor(state.values[1]).toLocaleString('vi-VN')}đ</span>
+                <span className='text-slate-800 text-base font-bold'>{Math.floor(state.values[0]).toLocaleString('vi-VN')}đ - {Math.floor(state.values[1]).toLocaleString('vi-VN')}đ</span>
 
                 <div className='flex flex-col py-5 gap-4'>
-                  <h2 className='text-3xl font-bold text-slate-600'>Đánh giá</h2>
+                  <h2 className='text-2xl font-bold text-slate-600'>Đánh giá</h2>
                   <div className='flex flex-col gap-3'>
-                    <div onClick={() => setRating(5)} className='flex justify-start item-start text-yellow-500 gap-2 text-xl md:gap-3 md:text-2xl cursor-pointer'>
+                    <div onClick={() => setRating(5)} className='flex justify-start item-start text-yellow-500 gap-2 text-xl cursor-pointer'>
                       <span><AiFillStar /></span>
                       <span><AiFillStar /></span>
                       <span><AiFillStar /></span>
                       <span><AiFillStar /></span>
                       <span><AiFillStar /></span>
                     </div>
-                    <div onClick={() => setRating(4)} className='flex justify-start item-start text-yellow-500 gap-2 text-xl md:gap-3 md:text-2xl cursor-pointer'>
+                    <div onClick={() => setRating(4)} className='flex justify-start item-start text-yellow-500 gap-2 text-xl cursor-pointer'>
                       <span><AiFillStar /></span>
                       <span><AiFillStar /></span>
                       <span><AiFillStar /></span>
                       <span><AiFillStar /></span>
                       <span><CiStar /></span>
                     </div>
-                    <div onClick={() => setRating(3)} className='flex justify-start item-start text-yellow-500 gap-2 text-xl md:gap-3 md:text-2xl cursor-pointer'>
+                    <div onClick={() => setRating(3)} className='flex justify-start item-start text-yellow-500 gap-2 text-xl cursor-pointer'>
                       <span><AiFillStar /></span>
                       <span><AiFillStar /></span>
                       <span><AiFillStar /></span>
                       <span><CiStar /></span>
                       <span><CiStar /></span>
                     </div>
-                    <div onClick={() => setRating(2)} className='flex justify-start item-start text-yellow-500 gap-2 text-xl md:gap-3 md:text-2xl cursor-pointer'>
+                    <div onClick={() => setRating(2)} className='flex justify-start item-start text-yellow-500 gap-2 text-xl cursor-pointer'>
                       <span><AiFillStar /></span>
                       <span><AiFillStar /></span>
                       <span><CiStar /></span>
                       <span><CiStar /></span>
                       <span><CiStar /></span>
                     </div>
-                    <div onClick={() => setRating(1)} className='flex justify-start item-start text-yellow-500 gap-2 text-xl md:gap-3 md:text-2xl cursor-pointer'>
+                    <div onClick={() => setRating(1)} className='flex justify-start item-start text-yellow-500 gap-2 text-xl cursor-pointer'>
                       <span><AiFillStar /></span>
                       <span><CiStar /></span>
                       <span><CiStar /></span>
                       <span><CiStar /></span>
                       <span><CiStar /></span>
                     </div>
-                    <div onClick={() => setRating('')} className='flex justify-start item-start text-yellow-500 gap-2 text-xl md:gap-3 md:text-2xl cursor-pointer'>
+                    <div onClick={() => setRating('')} className='flex justify-start item-start text-yellow-500 gap-2 text-xl cursor-pointer'>
                       <span><CiStar /></span>
                       <span><CiStar /></span>
                       <span><CiStar /></span>
@@ -120,7 +120,7 @@ const CategoryShop = () => {
                     </div>
                   </div>
                 </div>
-                <div className='hidden py-5 min-[1650px]:flex flex-col'>
+                <div className='hidden py-5 xl:flex flex-col'>
                   <Product title='Sản phẩm mới nhất' products={latest_product} />
                 </div>
               </div>
@@ -130,19 +130,19 @@ const CategoryShop = () => {
 
             <div className="w-full sm:w-9/12">
               <div className='pl-0 sm:pl-8'>
-                <div className='py-3 xl:py-4 mb-10 bg-white rounded-md flex justify-between items-start px-3  border border-[#dcdee4]'>
-                  <h2 className='text-lg font-medium text-slate-600'>{totalProduct} Sản phẩm</h2>
+                <div className='py-3 mb-10 bg-white rounded-md flex justify-between items-start px-3  border border-[#dcdee4]'>
+                  <h2 className='text-base font-medium text-slate-600'>{totalProduct} Sản phẩm</h2>
                   <div className='flex justify-center items-center gap-3'>
-                    <select onChange={(e) => setSortPrice(e.target.value)} className='p-1 border border-[#e9ebf0] rounded-md outline-none text-slate-600 font-semibold' name="" id="">
+                    <select onChange={(e) => setSortPrice(e.target.value)} className='p-1 border border-[#e9ebf0] rounded-md outline-none text-slate-600 font-semibold text-sm' name="" id="">
                       <option value="">Sắp xếp</option>
                       <option value="low-to-high">Giá thấp đến cao</option>
                       <option value="high-to-low">Giá cao đến thấp</option>
                     </select>
                     <div className=' hidden lg:flex justify-center items-center gap-4'>
-                      <div className='p-2  text-slate-600 hover:bg-slate-300 cursor-pointer rounded-md bg-slate-300'>
+                      <div className='p-2  text-slate-600 hover:bg-slate-300 cursor-pointer rounded-md bg-slate-300 text-sm'>
                         <span><BsFillGridFill /></span>
                       </div>
-                      <div className='p-2 hover:bg-slate-300  text-slate-600 cursor-pointer rounded-md'>
+                      <div className='p-2 hover:bg-slate-300  text-slate-600 cursor-pointer rounded-md text-sm'>
                         <span><FaThList /></span>
                       </div>
                     </div>

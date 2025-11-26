@@ -15,16 +15,16 @@ const Product = ({ title, products }) => {
   const ButtonGroup = ({ previous, next }) => {
     return (
       <div className='flex justify-between items-center'>
-        <div className='text-xl font-bold text-slate-600'>
+        <div className='text-lg font-bold text-slate-600'>
           {
             title
           }
         </div>
         <div className='flex justify-center items-center gap-3 text-slate-600'>
-          <button onClick={() => previous()} className='w-[35px] h-[35px] flex items-center justify-center border border-slate-200 bg-slate-300 rounded-full cursor-pointer hover:bg-red-400 hover:text-white'>
+          <button onClick={() => previous()} className='w-[30px] h-[30px] flex items-center justify-center border border-slate-200 bg-slate-300 rounded-full cursor-pointer hover:bg-red-400 hover:text-white'>
             <IoIosArrowBack />
           </button>
-          <button onClick={() => next()} className='w-[35px] h-[35px] flex items-center justify-center border border-slate-200 bg-slate-300 rounded-full cursor-pointer hover:bg-red-400 hover:text-white'>
+          <button onClick={() => next()} className='w-[30px] h-[30px] flex items-center justify-center border border-slate-200 bg-slate-300 rounded-full cursor-pointer hover:bg-red-400 hover:text-white'>
             <IoIosArrowForward />
           </button>
         </div>
@@ -56,23 +56,23 @@ const Product = ({ title, products }) => {
               <div key={index} className='flex flex-col justify-start gap-8'>
                 {
                   item.map((p, i) => <Link className='flex justify-start items-start gap-3' to='#' key={i}>
-                    <img className='w-[130px] h-[130px]' src={p.images[0]} alt="" />
+                    <img className='w-[120px] h-[120px]' src={p.images[0]} alt="" />
                     <div className='flex flex-col justify-start items-start gap-1'>
-                      <h3 className='text-base md:text-[18px] font-medium line-clamp-2'>{p.name}</h3>
+                      <h3 className='text-sm font-medium line-clamp-2'>{p.name}</h3>
                       {
                         p.discount > 0
                           ?
                           <>
-                            <p className="text-red-500 font-bold text-lg">
+                            <p className="text-red-500 font-bold text-base">
                               {formatPrice(p.price - (p.price * p.discount) / 100)}
                             </p>
                             <div>
-                              <span className='text-gray-400 line-through text-base'>{formatPrice(p.price)}</span>
-                              <span className='text-red-500 font-medium text-base'> -{p.discount}%</span>
+                              <span className='text-gray-400 line-through text-sm'>{formatPrice(p.price)}</span>
+                              <span className='text-red-500 font-medium text-sm'> -{p.discount}%</span>
                             </div>
                           </>
                           :
-                          <p className="text-red-500 font-bold text-lg">
+                          <p className="text-red-500 font-bold text-base">
                             {formatPrice(p.price)}
                           </p>
                       }

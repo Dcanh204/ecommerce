@@ -72,12 +72,12 @@ const Register = () => {
                 </form>
                 <div className='flex justify-center items-center my-3'>
                   <div className='h-px w-[95%] bg-slate-200'></div>
-                  <div className='px-3 text-slate-600'>Hoặc</div>
+                  <div className='px-3 text-sm text-slate-600'>Hoặc</div>
                   <div className='h-px w-[95%] bg-slate-200'></div>
                 </div>
                 <div className='flex justify-center items-center gap-3'>
-                  <p>Bạn đã có tài khoản ? </p>
-                  <Link to='/login' className='cursor-pointer text-blue-500 font-medium'>Đăng nhập</Link>
+                  <p className='text-sm'>Bạn đã có tài khoản ? </p>
+                  <Link to='/login' className='text-sm cursor-pointer text-blue-500 font-medium'>Đăng nhập</Link>
                 </div>
               </div>
             </div>

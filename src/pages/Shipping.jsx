@@ -3,9 +3,17 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import axios from 'axios';
 import { RiAddFill, RiSubtractFill } from 'react-icons/ri';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { place_order } from '../stores/reducers/orderReducers';
+import toast from 'react-hot-toast';
 
 const Shipping = () => {
 
+  const { products, price, shipping_fee, items } = useLocation().state;
+  const { userInfo } = useSelector(state => state.auth);
+  const dispatch = useDispatch();
+  const navigation = useNavigate();
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
@@ -76,15 +84,7 @@ const Shipping = () => {
       ward: selected.name
     })
   }
-
-
-
-
-
-
-
-
-  const save = (e) => {
+  const placeOrder = async (e) => {
     e.preventDefault();
 
     let formErrors = {};
@@ -99,44 +99,73 @@ const Shipping = () => {
 
     setErrors(formErrors);
 
-    // Nếu không có lỗi → xử lý submit
     if (Object.keys(formErrors).length === 0) {
-      console.log("Submit OK", state);
-      // navigate sang trang thanh toán hoặc gọi API
+      const orderInfo = {
+        products,
+        price,
+        shipping_fee,
+        items,
+        shippingInfo: state,
+        userId: userInfo.id,
+      }
+      try {
+        const result = await dispatch(place_order(orderInfo)).unwrap();
+        navigation('/payment', {
+          state: {
+            items,
+            totalPrice: price + shipping_fee,
+            orderId: result.orderId
+          }
+        });
+
+      } catch (error) {
+        toast.error("Lỗi tạo đơn: ", error.message)
+      }
     }
   }
-  console.log(state)
+
+
+
+  const formatPrice = (price) => {
+    const rounded = Math.floor(price / 1000) * 1000;
+    return new Intl.NumberFormat('vi-VN').format(rounded) + '₫';
+  }
 
   return (
     <div>
       <Header />
-      <section className='pt-35 pb-25 sm:pt-30 lg:pt-40 md:bg-[#eeeeee]'>
-        <div className='w-[90%] border mx-auto border-[#e9ebf0] mb-10'></div>
+      <section className='pt-35 pb-25 sm:pt-30 md:bg-[#eeeeee]'>
+        <div className='w-[90%] border mx-auto border-[#e9ebf0]'></div>
         <div className='w-[90%] xl:w-[70%] mx-auto py-16'>
           <div className='w-full flex flex-wrap'>
             <div className='w-full lg:w-[70%] 2xl:w-[65%]'>
               <div className='bg-[#eeeeee] md:bg-white p-4 rounded-lg shadow-md'>
-                <h2 className='text-slate-600 font-semibold pb-3 text-xl'>Thông tin vận chuyển</h2>
-                <form onSubmit={save}>
+                <h2 className='text-slate-600 font-semibold pb-3 text-lg'>Thông tin vận chuyển</h2>
+                <form onSubmit={placeOrder}>
                   <div className='w-full flex flex-col gap-4'>
-                    <input onChange={inputHanler} name='name' value={state.name} className='w-full rounded-lg px-3 py-2 border border-[#d9d9d9] outline-none focus:border-[#99c6de]' type="text" placeholder='Họ và tên' />
-                    {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
+                    <div>
+                      <input onChange={inputHanler} name='name' value={state.name} className='w-full rounded-lg px-3 py-1 border border-[#d9d9d9] outline-none focus:border-[#99c6de] text-sm' type="text" placeholder='Họ và tên' />
+                      {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
+                    </div>
                     <div className='flex flex-col md:flex-row gap-4 md:gap-0 justify-between w-full'>
                       <div className='flex flex-col md:w-[70%]'>
-                        <input onChange={inputHanler} name='email' value={state.email} className='w-full rounded-lg px-3 py-2 border border-[#d9d9d9] outline-none focus:border-[#99c6de]'
+                        <input onChange={inputHanler} name='email' value={state.email} className='w-full rounded-lg px-3 py-1 border border-[#d9d9d9] outline-none focus:border-[#99c6de] text-sm'
                           type="email" placeholder='Email' />
                       </div>
                       <div className='flex flex-col w-full md:w-[28%]'>
-                        <input onChange={inputHanler} name='phone' value={state.phone} className='w-full rounded-lg px-3 py-2 border border-[#d9d9d9] outline-none focus:border-[#99c6de]'
+                        <input onChange={inputHanler} name='phone' value={state.phone} className='w-full rounded-lg px-3 py-1 border border-[#d9d9d9] outline-none focus:border-[#99c6de] text-sm'
                           type="text" placeholder='Số điện thoại' />
-                        {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
+                        {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
                       </div>
                     </div>
-                    <input onChange={inputHanler} name='address' value={state.address} className='w-full rounded-lg px-3 py-2 border border-[#d9d9d9] outline-none focus:border-[#99c6de]' type="text" placeholder='Địa chỉ' />
-                    {errors.address && <p className="text-red-500 text-sm">{errors.address}</p>}
+                    <div>
+                      <input onChange={inputHanler} name='address' value={state.address} className='w-full rounded-lg px-3 py-1 border border-[#d9d9d9] outline-none focus:border-[#99c6de] text-sm' type="text" placeholder='Địa chỉ' />
+                      {errors.address && <p className="text-red-500 text-xs mt-1">{errors.address}</p>}
+                    </div>
+
                     <div className='flex flex-col md:flex-row gap-4 md:gap-0 justify-between w-full '>
                       <div className='w-full md:w-[30%] '>
-                        <select onChange={handleProvice} className='w-full px-3 py-2 border border-[#d9d9d9] rounded-lg  outline-none focus:border-[#99c6de] cursor-pointer'>
+                        <select onChange={handleProvice} className='w-full px-3 py-1 border border-[#d9d9d9] rounded-lg  outline-none focus:border-[#99c6de] cursor-pointer text-sm'>
                           <option value="">Chọn Tỉnh / Thành phố</option>
                           {
                             provinces.map((p) => (
@@ -144,10 +173,10 @@ const Shipping = () => {
                             ))
                           }
                         </select>
-                        {errors.province && <p className="text-red-500 text-sm mt-1">{errors.province}</p>}
+                        {errors.province && <p className="text-red-500 text-xs mt-1">{errors.province}</p>}
                       </div>
                       <div className='w-full md:w-[30%]'>
-                        <select onChange={handleDistrict} className='w-full px-3 py-2 border border-[#d9d9d9] rounded-lg  outline-none focus:border-[#99c6de] cursor-pointer'>
+                        <select onChange={handleDistrict} className='w-full px-3 py-1 border border-[#d9d9d9] rounded-lg  outline-none focus:border-[#99c6de] cursor-pointer text-sm'>
                           <option value="">Chọn Quận / Huyện</option>
                           {
                             districts.map(d => (
@@ -155,11 +184,11 @@ const Shipping = () => {
                             ))
                           }
                         </select>
-                        {errors.district && <p className="text-red-500 text-sm mt-1 ">{errors.district}</p>}
+                        {errors.district && <p className="text-red-500 text-xs mt-1 ">{errors.district}</p>}
                       </div>
 
                       <div className='w-full md:w-[30%]'>
-                        <select onChange={handlerWard} className='w-full px-3 py-2 border border-[#d9d9d9] rounded-lg outline-none focus:border-[#99c6de] cursor-pointer'>
+                        <select onChange={handlerWard} className='w-full px-3 py-1 border border-[#d9d9d9] rounded-lg outline-none focus:border-[#99c6de] cursor-pointer text-sm'>
                           <option value="">Chọn Phường / Xã</option>
                           {
                             wards.map(w => (
@@ -167,40 +196,51 @@ const Shipping = () => {
                             ))
                           }
                         </select>
-                        {errors.ward && <p className="text-red-500 text-sm mt-1">{errors.ward}</p>}
+                        {errors.ward && <p className="text-red-500 text-xs mt-1">{errors.ward}</p>}
                       </div>
 
                     </div>
                     <div className='flex justify-end items-center mt-4'>
-                      <button className='w-full md:w-[40%] px-3 py-2 bg-red-500 text-white rounded-md font-semibold text-lg cursor-pointer whitespace-nowrap'>Phương thức thanh toán</button>
+                      <button className='w-full md:w-[30%] px-1 py-2 bg-red-500 text-white rounded-md font-medium text-sm cursor-pointer whitespace-nowrap'>Phương thức thanh toán</button>
                     </div>
 
                   </div>
                 </form>
               </div>
               {
-                [1, 2].map((p, i) => <div key={i} className='flex bg-[#eeeeee] md:bg-white p-4 flex-col gap-2 rounded-lg shadow-md mt-5'>
+                products.map((p, i) => <div key={i} className='flex bg-[#eeeeee] md:bg-white p-4 flex-col gap-2 rounded-lg shadow-md mt-5'>
                   <div className='flex justify-start items-center'>
-                    <h2 className='text-base text-slate-600 font-bold'>Thế giới di động</h2>
+                    <h2 className='text-base text-slate-600 font-bold'>{p.shopName}</h2>
                   </div>
                   {
-                    [1, 2].map((item, i) => <div key={i} className='w-full flex flex-wrap '>
+                    p.products.map((item, i) => <div key={i} className='w-full flex flex-wrap '>
                       <div className='flex w-full sm:w-7/12 gap-2 '>
                         <div className='flex gap-4 justify-start items-center'>
-                          <img className='w-20 h-20' src={`images/products/${i + 1}.webp`} alt="product" />
+                          <img className='w-20 h-20' src={item.productInfo.images[0]} alt="product" />
                           <div>
-                            <h2 className='font-bold text-lg text-slate-600'>Product name</h2>
-                            <span className='text-sm text-slate-600'>Brand: Apple</span>
+                            <h2 className='font-bold text-sm text-slate-600'>{item.productInfo.name}</h2>
+                            <span className='text-xs text-slate-600'>Thương hiệu: {item.productInfo.brand}</span>
                           </div>
                         </div>
                       </div>
                       <div className='flex w-full sm:w-5/12 mt-3 sm:mt-0 justify-end'>
-                        <div className='pl-0 sm:pl-4'>
-                          <h2 className='font-bold text-lg text-red-500'>1.800.000₫</h2>
-                          <p className='text-gray-400 line-through text-base'>2.000.000₫</p>
-                          <p className='text-red-500 font-medium text-base'> -10%</p>
-                        </div>
-
+                        {
+                          item.productInfo.discount > 0
+                            ?
+                            <div className='pl-0 sm:pl-4'>
+                              <h2 className='font-bold text-sm text-red-500'>
+                                {formatPrice(item.productInfo.price - (item.productInfo.price * item.productInfo.discount) / 100)}
+                              </h2>
+                              <p className='text-gray-400 line-through text-xs'>{formatPrice(item.productInfo.price)}</p>
+                              <p className='text-red-500 font-medium text-xs'> -{item.productInfo.discount}%</p>
+                            </div>
+                            :
+                            <div className='pl-0 sm:pl-4'>
+                              <h2 className='font-bold text-sm text-red-500'>
+                                {formatPrice(item.productInfo.price)}
+                              </h2>
+                            </div>
+                        }
                       </div>
                       <div className='w-full h-px border border-[#e9ebf0] mx-auto my-2'></div>
                     </div>)
@@ -212,18 +252,18 @@ const Shipping = () => {
               <div className='pl-0 lg:pl-3 mt-5 lg:mt-0'>
                 {
                   <div className='bg-[#eeeeee] md:bg-white p-4 rounded-lg shadow-md flex flex-col gap-4'>
-                    <h2 className='font-bold text-xl text-slate-600'>Đơn hàng</h2>
-                    <div className='flex justify-between items-center'>
+                    <h2 className='font-bold text-base text-slate-600'>Đơn hàng</h2>
+                    <div className='flex justify-between items-center text-sm'>
                       <span>Tổng tiền hàng</span>
-                      <span>3.600.000₫</span>
+                      <span>{formatPrice(price)}</span>
                     </div>
-                    <div className='flex justify-between items-center'>
+                    <div className='flex justify-between items-center text-sm'>
                       <span>Phí vận chuyển</span>
-                      <span>40.000₫</span>
+                      <span>{formatPrice(shipping_fee)}</span>
                     </div>
                     <div className='flex justify-between items-center'>
-                      <span>Tổng tiền</span>
-                      <span className='font-semibold text-red-500 text-lg'>3.640.000₫</span>
+                      <span className='text-sm'>Tổng tiền</span>
+                      <span className='font-semibold text-red-500 text-base'>{formatPrice(price + shipping_fee)}</span>
                     </div>
                   </div>
                 }

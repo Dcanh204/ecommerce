@@ -12,6 +12,7 @@ import { getCategory } from './stores/reducers/categoryReducers';
 import CategoryShop from './pages/CategoryShop';
 import SearchProduct from './pages/SearchProduct';
 import NotFound from './pages/NotFound';
+import Payment from './pages/payment';
 
 const App = () => {
   const dispatch = useDispatch()
@@ -30,6 +31,7 @@ const App = () => {
         <Route path='/category/:slug' element={<CategoryShop />} />
         <Route path='/search' element={<SearchProduct />} />
         <Route path='/register' element={<Register />} />
+        <Route path='/payment' element={<Payment />} />
         <Route path='*' element={<NotFound />} />
 
 

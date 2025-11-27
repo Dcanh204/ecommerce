@@ -26,10 +26,10 @@ const Cart = () => {
   const redirect = () => {
     navigation('/shipping', {
       state: {
-        products: [],
-        price: 360000,
-        shipping_fee: 40000,
-        item: 2,
+        products: cart_products,
+        price: price,
+        shipping_fee: shipping_fee,
+        items: buy_product_item,
       }
     })
   }

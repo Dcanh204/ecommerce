@@ -1,9 +1,33 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaEye } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
+import { get_orders } from '../../stores/reducers/orderReducers';
+import { translateDeliveryStatus, translatePaymentStatus } from '../../utils/TranslateStatus';
 
 const Order = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { userInfo } = useSelector(state => state.auth);
+  const { myOrders } = useSelector(state => state.order);
   const [statusOrder, setStatusOrder] = useState('all');
+  useEffect(() => {
+    dispatch(get_orders({ userId: userInfo.id, status: statusOrder }))
+  }, [userInfo, dispatch, statusOrder])
+  const formatPrice = (price) => {
+    const rounded = Math.floor(price / 1000) * 1000;
+    return new Intl.NumberFormat('vi-VN').format(rounded) + '₫';
+  }
+  const redirect_payment = (order) => {
+    let items = order.products.reduce((sum, item) => sum + item.quantity, 0)
+    navigate('/payment', {
+      state: {
+        price: order.price,
+        orderId: order._id,
+        items
+      }
+    })
+  }
   return (
     <div className='bg-white p-4 rounded-md'>
       <div className='flex justify-between items-center'>
@@ -27,20 +51,24 @@ const Order = () => {
             </tr>
           </thead>
           <tbody>
-            <tr className='border-b border-[#e1e8f0]'>
-              <td className='px-6 py-4 whitespace-nowrap'>#312</td>
-              <td className='px-6 py-4 whitespace-nowrap'>2.000.000đ</td>
-              <td className='px-6 py-4 whitespace-nowrap'>Chưa thanh toán</td>
-              <td className='px-6 py-4 whitespace-nowrap'>Chờ xử lý</td>
-              <td className='px-6 py-4 whitespace-nowrap flex items-center gap-3'>
-                <Link>
-                  <span className='bg-green-200 text-green-800 h-6 px-2 inline-flex justify-center items-center rounded-md'><FaEye /></span>
-                </Link>
-                <Link>
-                  <span className='bg-green-200 text-green-800 h-6 px-2 inline-flex justify-center items-center rounded-md'>Thanh toán</span>
-                </Link>
-              </td>
-            </tr>
+            {
+              myOrders.map((item, i) => <tr key={i} className='border-b border-[#e1e8f0]'>
+                <td className='px-6 py-4 whitespace-nowrap'>MDH - {item._id?.slice(-6).toUpperCase()}</td>
+                <td className='px-6 py-4 whitespace-nowrap'>{formatPrice(item.price)}</td>
+                <td className='px-6 py-4 whitespace-nowrap'>{translatePaymentStatus(item.payment_status)}</td>
+                <td className='px-6 py-4 whitespace-nowrap'>{translateDeliveryStatus(item.delivery_status)}</td>
+                <td className='px-6 py-4 whitespace-nowrap flex items-center gap-3'>
+                  <Link to={`/dashboard/order/details/${item._id}`}>
+                    <span className='bg-green-200 text-green-800 h-6 px-2 inline-flex justify-center items-center rounded-md'><FaEye /></span>
+                  </Link>
+                  {
+                    item.payment_status !== 'paid' && <span onClick={() => redirect_payment(item)} className='bg-green-200 text-green-800 h-6 px-2 inline-flex justify-center items-center rounded-md cursor-pointer'>Thanh toán</span>
+                  }
+                </td>
+              </tr>
+              )
+            }
+
           </tbody>
         </table>
       </div>

@@ -26,7 +26,7 @@ export const get_orders = createAsyncThunk(
 )
 
 export const get_order_details = createAsyncThunk(
-  'order/get_orders',
+  'order/get_order_details',
   async (orderId, { rejectWithValue }) => {
     try {
       const { data } = await api.get(`/order/${orderId}`);
@@ -56,6 +56,9 @@ const orderReducer = createSlice({
     builder
       .addCase(get_orders.fulfilled, (state, action) => {
         state.myOrders = action.payload?.orders
+      })
+      .addCase(get_order_details.fulfilled, (state, action) => {
+        state.myOrder = action.payload?.order
       })
   }
 })

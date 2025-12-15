@@ -5,18 +5,17 @@ import { FaFacebookF, FaGithub, FaUser, FaLock, FaList, FaHeart, FaShoppingCart,
 import { SiZalo } from "react-icons/si";
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { get_cart_product } from '../stores/reducers/cartReducers';
+import { get_cart_product, get_wishlist_products } from '../stores/reducers/cartReducers';
 const Header = () => {
   const dispatch = useDispatch();
   const navigation = useNavigate();
   const categoryRef = useRef(null)
   const { categories } = useSelector(state => state.category);
   const { userInfo } = useSelector(state => state.auth)
-  const { cart_product_count } = useSelector(state => state.cart)
+  const { cart_product_count, wishlist_product_count } = useSelector(state => state.cart)
   const [showSidebar, setShowSidebar] = useState(false);
   const [showCategory, setShowCategory] = useState(false);
   const [searchValue, setSearchValue] = useState('')
-  const wishlist_count = 3;
   const search = (e) => {
     e.preventDefault();
     if (searchValue.trim() !== '') {
@@ -26,6 +25,7 @@ const Header = () => {
   useEffect(() => {
     if (userInfo) {
       dispatch(get_cart_product(userInfo.id))
+      dispatch(get_wishlist_products(userInfo.id))
     }
   }, [dispatch, userInfo])
   // đóng menu
@@ -148,14 +148,17 @@ const Header = () => {
 
                 <div className='hidden xl:flex justify-center items-center'>
                   <div className='flex justify-center gap-7'>
-                    <Link>
+                    <Link to="/dashboard/my-wishlist">
                       <div className='relative flex justify-center items-center cursor-pointer w-[35px] h-[35px] bg-[#e2e2e2] rounded-full'>
                         <span className='text-md text-green-500'><FaHeart /></span>
-                        <div className='absolute w-5 h-5 bg-red-500 rounded-full text-white -top-1.5 -right-2 flex justify-center items-center'>
-                          {
-                            wishlist_count
-                          }
-                        </div>
+                        {
+                          wishlist_product_count !== 0 && <div className='absolute w-5 h-5 bg-red-500 rounded-full text-white -top-1.5 -right-2 flex justify-center items-center'>
+                            {
+                              wishlist_product_count
+                            }
+                          </div>
+                        }
+
                       </div>
                     </Link>
                     <Link to='/cart'>

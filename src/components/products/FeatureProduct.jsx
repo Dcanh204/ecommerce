@@ -4,7 +4,7 @@ import { FaEye, FaRegHeart, FaStar } from "react-icons/fa";
 import { RiShoppingCartLine } from 'react-icons/ri';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
-import { add_to_cart, messageClear } from '../../stores/reducers/cartReducers';
+import { add_to_cart, add_to_wishlist, messageClear } from '../../stores/reducers/cartReducers';
 const FeatureProduct = ({ products }) => {
   const navigation = useNavigate();
   const dispatch = useDispatch();
@@ -27,6 +27,19 @@ const FeatureProduct = ({ products }) => {
         productId: id
       }))
     }
+  }
+  // Thêm sản phẩm vào yêu thích
+  const add_wishlist = (product) => {
+    dispatch(add_to_wishlist({
+      userId: userInfo.id,
+      productId: product._id,
+      name: product.name,
+      price: product.price,
+      image: product.images[0],
+      discount: product.discount,
+      rating: product.rating,
+      slug: product.slug
+    }))
   }
   useEffect(() => {
     if (successMessage) {
@@ -59,10 +72,10 @@ const FeatureProduct = ({ products }) => {
 
                 <img src={item?.images[0]} alt="" className='transition-all duration-500 group-hover:-translate-y-2 w-full h-[190px]' />
                 <ul className='flex w-full transition-all duration-700 justify-center items-center gap-2 absolute'>
-                  <Link className='w-[30px] h-[30px] flex justify-center items-center bg-white cursor-pointer rounded-full hover:bg-[#059473] hover:text-white hover:rotate-720 transition-all opacity-0 group-hover:opacity-100 group-hover:-translate-y-15 text-sm'>
+                  <li onClick={() => add_wishlist(item)} className='w-[30px] h-[30px] flex justify-center items-center bg-white cursor-pointer rounded-full hover:bg-[#059473] hover:text-white hover:rotate-720 transition-all opacity-0 group-hover:opacity-100 group-hover:-translate-y-15 text-sm'>
                     <FaRegHeart />
-                  </Link>
-                  <Link to='/product/details/new' className='w-[30px] h-[30px] flex justify-center items-center bg-white cursor-pointer rounded-full hover:bg-[#059473] hover:text-white hover:rotate-720 transition-all opacity-0 group-hover:opacity-100 group-hover:-translate-y-15 text-sm'>
+                  </li>
+                  <Link to={`/product/details/${item.slug}`} className='w-[30px] h-[30px] flex justify-center items-center bg-white cursor-pointer rounded-full hover:bg-[#059473] hover:text-white hover:rotate-720 transition-all opacity-0 group-hover:opacity-100 group-hover:-translate-y-15 text-sm'>
                     <FaEye />
                   </Link>
                   <Link onClick={(e) => {

@@ -2,14 +2,14 @@ import React, { useEffect } from 'react';
 import { FaEye, FaRegHeart, FaStar } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { add_to_cart, messageClear } from '../../stores/reducers/cartReducers';
+import { add_to_cart, get_wishlist_products, messageClear, remove_wishlist } from '../../stores/reducers/cartReducers';
 import { RiShoppingCartLine } from 'react-icons/ri';
 import toast from 'react-hot-toast';
 
 const WishList = () => {
   const dispatch = useDispatch();
   const { userInfo } = useSelector(state => state.auth);
-  const { successMessage, errorMessage } = useSelector(state => state.cart);
+  const { successMessage, errorMessage, wishlist_products } = useSelector(state => state.cart);
   const formatPrice = (price) => {
     const rounded = Math.floor(price / 1000) * 1000;
     return new Intl.NumberFormat('vi-VN').format(rounded) + '₫';
@@ -31,10 +31,14 @@ const WishList = () => {
       dispatch(messageClear())
     }
   }, [successMessage, errorMessage, dispatch])
+
+  useEffect(() => {
+    dispatch(get_wishlist_products(userInfo.id));
+  }, [dispatch, userInfo])
   return (
-    <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-6'>
+    <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6'>
       {
-        [1, 2, 3, 4, 5, 6].map((item, i) => <div key={i} className='border border-[#e9ebf0] overflow-hidden group max-h-[450px] p-2 rounded-lg'>
+        wishlist_products.map((item, i) => <div key={i} className='border border-[#e9ebf0] overflow-hidden group max-h-[450px] p-2 rounded-lg bg-white'>
           <div className='relative'>
             {
               item.discount > 0
@@ -44,22 +48,20 @@ const WishList = () => {
                 </div>
                 : ''
             }
-
-
-            <img src={`/images/products/${item}.webp`} alt="" className='transition-all duration-500 group-hover:-translate-y-2 w-full h-[190px]' />
+            <img src={item.image} alt="" className='transition-all duration-500 group-hover:-translate-y-2 w-full h-[190px]' />
             <ul className='flex w-full transition-all duration-700 justify-center items-center gap-2 absolute'>
-              <li className='w-[30px] h-[30px] flex justify-center items-center bg-white cursor-pointer rounded-full hover:bg-[#059473] hover:text-white hover:rotate-720 transition-all opacity-0 group-hover:opacity-100 group-hover:-translate-y-15 text-sm'>
+              <li onClick={() => dispatch(remove_wishlist(item._id))} className='w-[30px] h-[30px] flex justify-center items-center bg-white cursor-pointer rounded-full hover:bg-[#059473] hover:text-white hover:rotate-720 transition-all opacity-0 group-hover:opacity-100 group-hover:-translate-y-15 text-sm'>
                 <FaRegHeart />
               </li>
-              <Link to={`/product/details/new`} className='w-[30px] h-[30px] flex justify-center items-center bg-white cursor-pointer rounded-full hover:bg-[#059473] hover:text-white hover:rotate-720 transition-all opacity-0 group-hover:opacity-100 group-hover:-translate-y-15 text-sm'>
+              <Link to={`/product/details/${item.slug}`} className='w-[30px] h-[30px] flex justify-center items-center bg-white cursor-pointer rounded-full hover:bg-[#059473] hover:text-white hover:rotate-720 transition-all opacity-0 group-hover:opacity-100 group-hover:-translate-y-15 text-sm'>
                 <FaEye />
               </Link>
-              <li onClick={() => add_cart(item._id)} className='w-[30px] h-[30px] flex justify-center items-center bg-white cursor-pointer rounded-full hover:bg-[#059473] hover:text-white hover:rotate-720 transition-all opacity-0 group-hover:opacity-100 group-hover:-translate-y-15 text-sm'>
+              <li onClick={() => add_cart(item.productId)} className='w-[30px] h-[30px] flex justify-center items-center bg-white cursor-pointer rounded-full hover:bg-[#059473] hover:text-white hover:rotate-720 transition-all opacity-0 group-hover:opacity-100 group-hover:-translate-y-15 text-sm'>
                 <RiShoppingCartLine />
               </li>
             </ul>
           </div>
-          <Link to={`/product/details/new`}>
+          <Link to={`/product/details/${item.slug}`}>
             <div className='p-3 flex flex-col gap-1'>
               <h3 className='text-sm font-medium line-clamp-2'>{item.name}</h3>
               <div className="mt-1">

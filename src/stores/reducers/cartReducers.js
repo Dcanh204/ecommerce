@@ -61,6 +61,42 @@ export const quantity_dec = createAsyncThunk(
   }
 )
 
+export const add_to_wishlist = createAsyncThunk(
+  'wishlist/add_to_wishlist',
+  async (productInfo, { rejectWithValue }) => {
+    try {
+      const { data } = await api.post(`/cart/add-to-wishlist`, productInfo);
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+)
+
+export const get_wishlist_products = createAsyncThunk(
+  'wishlist/get_wishlist_products',
+  async (userId, { rejectWithValue }) => {
+    try {
+      const { data } = await api.get(`/cart/get-wishlist-products/${userId}`);
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+)
+
+export const remove_wishlist = createAsyncThunk(
+  'wishlist/remove_wishlist',
+  async (wishlistId, { rejectWithValue }) => {
+    try {
+      const { data } = await api.delete(`/cart/remove-wishlist-products/${wishlistId}`);
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+)
+
 const cartReducer = createSlice({
   name: 'cart',
   initialState: {
@@ -107,6 +143,26 @@ const cartReducer = createSlice({
       })
       .addCase(quantity_dec.fulfilled, (state, action) => {
         state.successMessage = action.payload?.message;
+      })
+
+      .addCase(add_to_wishlist.rejected, (state, action) => {
+        state.errorMessage = action.payload?.message;
+      })
+
+      .addCase(add_to_wishlist.fulfilled, (state, action) => {
+        state.successMessage = action.payload?.message;
+        state.wishlist_product_count = state.wishlist_product_count > 0 ? state.wishlist_product_count + 1 : 1;
+      })
+
+      .addCase(get_wishlist_products.fulfilled, (state, action) => {
+        state.wishlist_products = action.payload?.wishlist_products;
+        state.wishlist_product_count = action.payload?.wishlistCount;
+      })
+
+      .addCase(remove_wishlist.fulfilled, (state, action) => {
+        state.successMessage = action.payload?.message;
+        state.wishlist_products = state.wishlist_products.filter(item => item._id !== action.payload?.wishlistId);
+        state.wishlist_product_count = state.wishlist_product_count - 1;
       })
   }
 })

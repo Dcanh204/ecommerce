@@ -55,7 +55,7 @@ const Product = ({ title, products }) => {
             return (
               <div key={index} className='flex flex-col justify-start gap-8'>
                 {
-                  item.map((p, i) => <Link className='flex justify-start items-start gap-3' to='#' key={i}>
+                  item.map((p, i) => <Link className='flex justify-start items-start gap-3' to={`/product/details/${p.slug}`} key={i}>
                     <img className='w-[120px] h-[120px]' src={p.images[0]} alt="" />
                     <div className='flex flex-col justify-start items-start gap-1'>
                       <h3 className='text-sm font-medium line-clamp-2'>{p.name}</h3>

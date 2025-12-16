@@ -86,7 +86,7 @@ const FeatureProduct = ({ products }) => {
                   </Link>
                 </ul>
               </div>
-              <Link to='/product/details/new'>
+              <Link to={`/product/details/${item.slug}`}>
                 <div className='p-3 flex flex-col gap-1'>
                   <h3 className='text-sm font-medium line-clamp-2'>{item.name}</h3>
                   <div className="mt-1">

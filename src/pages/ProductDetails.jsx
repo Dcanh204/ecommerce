@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { IoIosArrowForward } from 'react-icons/io';
 import Carousel from 'react-multi-carousel';
 import "react-multi-carousel/lib/styles.css";
@@ -15,17 +15,138 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination } from 'swiper/modules';
+import { useDispatch, useSelector } from 'react-redux';
+import { product_details } from '../stores/reducers/productReducers';
+import toast from 'react-hot-toast';
+import { add_to_cart, add_to_wishlist, messageClear } from '../stores/reducers/cartReducers';
+
 
 const ProductDetails = () => {
-  const images = [1, 2, 3, 4, 5, 6];
-
+  const navigation = useNavigate();
+  const { slug } = useParams();
+  const dispatch = useDispatch();
+  const { userInfo } = useSelector(state => state.auth);
+  const { product, relatedProducts, fromStore } = useSelector(state => state.product);
+  const { successMessage, errorMessage } = useSelector(state => state.cart);
+  useEffect(() => {
+    dispatch(product_details(slug));
+  }, [slug, dispatch])
+  const [quantity, setQuantity] = useState(1);
   const [image, setImage] = useState('');
   const [state, setState] = useState('reviews')
-  const discount = 10;
-  const stock = 10;
-  const price = 100000;
+
+  useEffect(() => {
+    if (successMessage) {
+      toast.success(successMessage);
+      dispatch(messageClear())
+    }
+    if (errorMessage) {
+      toast.error(errorMessage);
+      dispatch(messageClear())
+    }
+  }, [successMessage, errorMessage, dispatch])
+
+  const increment = () => {
+    if (quantity > product.stock) {
+      toast.error("Vượt quá số lượng tồn kho");
+    } else {
+      setQuantity(quantity + 1);
+    }
+  }
+
+  const decrement = () => {
+    if (quantity > 1) {
+      setQuantity(quantity - 1)
+    }
+  }
+
+  const add_cart = () => {
+    if (!userInfo) {
+      toast.error("Vui lòng đăng nhập!");
+      navigation('/login');
+    } else {
+      dispatch(add_to_cart({
+        userId: userInfo.id,
+        quantity,
+        productId: product._id
+      }))
+    }
+  }
+
+  const add_wishlist = () => {
+    if (!userInfo) {
+      toast.error("Vui lòng đăng nhập!");
+      navigation('/login');
+    } else {
+      dispatch(add_to_wishlist({
+        userId: userInfo.id,
+        productId: product._id,
+        name: product.name,
+        price: product.price,
+        image: product.images[0],
+        discount: product.discount,
+        rating: product.rating,
+        slug: product.slug
+      }))
+    }
+
+  }
+
+  const buynow = () => {
+    let price = 0;
+    if (product.discount !== 0) {
+      price = product.price - (product.price * product.discount) / 100;
+    } else {
+      price = product.price
+    }
+
+    const obj = [
+      {
+        sellerId: product.sellerId,
+        shopName: product.shopName,
+        price: price * quantity,
+        products: [
+          {
+            quantity,
+            productInfo: product
+          }
+        ]
+      }
+    ]
+
+    navigation('/shipping', {
+      state: {
+        products: obj,
+        price: price * quantity,
+        shipping_fee: 20000,
+        items: 1,
+      }
+    })
+  }
+  const add_wishlist_byId = (product) => {
+    if (!userInfo) {
+      toast.error("Vui lòng đăng nhập!");
+      navigation('/login');
+    } else {
+      dispatch(add_to_wishlist({
+        userId: userInfo.id,
+        productId: product._id,
+        name: product.name,
+        price: product.price,
+        image: product.images[0],
+        discount: product.discount,
+        rating: product.rating,
+        slug: product.slug
+      }))
+    }
+
+  }
+
   // tính giảm giá
-  const finalPrice = discount > 0 ? price - (price * discount / 100) : price;
+  const formatPrice = (price) => {
+    const rounded = Math.floor(price / 1000) * 1000;
+    return new Intl.NumberFormat('vi-VN').format(rounded) + '₫';
+  }
   const responsive = {
     superLargeDesktop: {
       breakpoint: { max: 4000, min: 1350 },
@@ -57,74 +178,74 @@ const ProductDetails = () => {
       <Header />
       <section className='pt-35 sm:pt-30 lg:pt-40'>
         <div className='bg-slate-100 py-3 mb-5'>
-          <div className='w-[80%] mx-auto h-full py-5'>
+          <div className='w-[80%] mx-auto h-full py-1'>
             <div className='flex justify-start items-center text-slate w-full gap-3'>
               <Link to='/'>Trang chủ</Link>
               <span className='pt-1'><IoIosArrowForward /></span>
-              <Link to='/'>Danh Mục</Link>
+              <Link to='/'>{product.category}</Link>
               <span className='pt-1'><IoIosArrowForward /></span>
-              <Link to='/'>Tên sản phẩm</Link>
+              <Link to='/'>{product.name}</Link>
             </div>
           </div>
         </div>
       </section>
       <section>
-        <div className='w-[80%] mx-auto h-full py-5'>
+        <div className='w-[80%] mx-auto h-full py-3'>
           <div className='grid grid-cols-1 lg:grid-cols-2 gap-8 items-start'>
             <div className='border border-[#e9ebf0] rounded-lg shadow-md p-2'>
               <div className='p-10 mb-5'>
-                <img className='w-full h-[400px]' src={image ? `/images/products/${image}.webp` : `/images/products/${images[1]}.webp`} alt="product" />
+                <img className='w-full h-[400px]' src={image ? image : product?.images?.[0]} alt="product" />
               </div>
               {
-                images && <Carousel
+                product.images && <Carousel
                   responsive={responsive}
                   autoPlay={true}
                   infinite={true}
                   transitionDuration={500}
                 >
                   {
-                    images.map((img, i) => <div key={i} onClick={() => setImage(img)} className='flex gap-1 justify-center items-center'>
-                      <img className='h-[120px] cursor-pointer' src={`/images/products/${i + 1}.webp`} alt="" />
+                    product.images.map((img, i) => <div key={i} onClick={() => setImage(img)} className='flex gap-1 justify-center items-center border border-[#f2f2f2]'>
+                      <img className='h-[60px] cursor-pointer' src={img} alt="" />
                     </div>)
                   }
                 </Carousel>
               }
             </div>
 
-            <div className='flex flex-col gap-5'>
-              <h3 className='font-semibold text-3xl text-slate-600'> Product name</h3>
+            <div className='flex flex-col gap-3'>
+              <h3 className='font-semibold text-2xl text-slate-600'>{product.name}</h3>
               <div className='flex justify-start items-center gap-4'>
-                <div className='text-xl flex items-center gap-2'>
+                <div className='text-base flex items-center gap-2'>
                   <Rating ratings={4.5} />
                   <span>(24 đánh giá)</span>
                 </div>
               </div>
-              <h3 className='font-semibold text-xl text-slate-600'> Thương hiệu: </h3>
-              <h3 className='font-semibold text-xl text-slate-600'> Tên cửa hàng:</h3>
+              <h3 className=' text-base text-slate-600'> Thương hiệu: {product.brand} </h3>
+              <h3 className=' text-base text-slate-600'> Tên cửa hàng: {product.shopName}</h3>
               <div>
                 <div className='flex items-center gap-3'>
-                  {discount > 0
+                  {product.discount > 0
                     ? (
                       <>
-                        <h2 className='font-semibold text-3xl text-slate-600'>Giá: </h2>
-                        <span className='text-3xl font-bold text-red-600'>
-                          {finalPrice.toLocaleString()}đ
+                        <h2 className='text-base text-slate-600'>Giá: </h2>
+                        <span className='text-xl font-bold text-red-600'>
+                          {formatPrice(product.price - (product.price * product.discount) / 100)}
                         </span>
 
-                        <span className='text-lg line-through text-slate-400'>
-                          {price.toLocaleString()}đ
+                        <span className='text-base line-through text-slate-400'>
+                          {formatPrice(product.price)}
                         </span>
 
-                        <span className='text-sm font-semibold bg-red-100 text-red-600 px-2 py-1 rounded'>
-                          -{discount}%
+                        <span className='text-xs font-semibold bg-red-100 text-red-600 px-2 py-1 rounded'>
+                          -{product.discount}%
                         </span>
                       </>
                     )
                     : (
                       <>
-                        <h2 className='font-semibold text-3xl text-slate-600'>Giá: </h2>
-                        <span className='text-3xl font-bold text-slate-700'>
-                          {price.toLocaleString()}đ
+                        <h2 className=' text-base text-slate-600'>Giá: </h2>
+                        <span className='text-xl font-bold text-red-600'>
+                          {formatPrice(product.price)}
                         </span>
                       </>
 
@@ -134,36 +255,36 @@ const ProductDetails = () => {
               </div>
 
               <div className="text-slate-700">
-                <p className=" w-full 2xl:w-[80%] leading-relaxed text-base tracking-wide bg-slate-50 p-4 rounded-lg border border-slate-200">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Hic a nostrum,
-                  libero maxime commodi possimus quis aliquam? Possimus voluptatem at impedit
-                  praesentium consequuntur atque eveniet dignissimos. Molestias placeat
-                  possimus soluta.
-                </p>
+                {
+                  product.description && <p className=" w-full 2xl:w-[80%] leading-relaxed text-base tracking-wide bg-slate-50 p-4 rounded-lg border border-slate-200">
+                    {product.description}
+                  </p>
+                }
+
               </div>
               <div className='flex flex-col gap-3 pb-10 border-b border-[#e9ebf0]'>
                 {
-                  stock ?
+                  product.stock ?
                     <>
                       <div className='flex justify-start items-center'>
-                        <h2 className='font-medium text-lg text-slate-600 mr-10'>Số lượng: </h2>
-                        <button className='h-8 w-10 rounded-l-md border border-[#e6e9ed] flex justify-center items-center cursor-pointer'>
+                        <h2 className='font-medium text-base text-slate-600 mr-10'>Số lượng: </h2>
+                        <button onClick={decrement} className='h-7 w-8 rounded-l-md border border-[#e6e9ed] flex justify-center items-center cursor-pointer'>
                           <RiSubtractFill />
                         </button>
-                        <input type="text" className='h-8 text-center w-10 border border-[#e6e9ed] outline-none px-2 ' placeholder='1' />
-                        <button className='h-8 w-10 rounded-r-md border border-[#e6e9ed] flex justify-center items-center cursor-pointer'>
+                        <input readOnly type="text" className='h-7 text-center w-8 border border-[#e6e9ed] outline-none px-2 ' value={quantity} />
+                        <button onClick={increment} className='h-7 w-8 rounded-r-md border border-[#e6e9ed] flex justify-center items-center cursor-pointer'>
                           <RiAddFill />
                         </button>
                       </div>
                       <div className='flex gap-4'>
                         <div>
-                          <button className="flex items-center justify-center gap-2 bg-[#059473] text-white px-4 py-2 rounded-lg hover:bg-green-500 cursor-pointer">
+                          <button onClick={add_cart} className="flex items-center justify-center gap-2 bg-[#059473] text-white px-4 py-2 rounded-lg hover:bg-green-500 cursor-pointer">
                             <MdOutlineAddShoppingCart />
                             Thêm vào giỏ
                           </button>
                         </div>
                         <div>
-                          <button className="flex items-center justify-center gap-2 bg-[#059473] text-white px-4 py-3 rounded-lg hover:bg-green-500 transition cursor-pointer">
+                          <button onClick={add_wishlist} className="flex items-center justify-center gap-2 bg-[#059473] text-white px-4 py-3 rounded-lg hover:bg-green-500 transition cursor-pointer">
                             <FaHeart />
                           </button>
                         </div>
@@ -174,36 +295,34 @@ const ProductDetails = () => {
                 }
               </div>
               <div className='flex py-5 gap-5'>
-                <div className='w-[150px] font-bold  text-black text-xl flex flex-col gap-5'>
+                <div className='w-[150px] font-bold  text-black text-lg flex flex-col gap-5'>
                   <span>Tình trạng: </span>
                   <span>Chia sẻ: </span>
                 </div>
                 <div className='flex flex-col gap-5'>
-                  <span className={`text-${stock ? 'green' : 'red'}-500 text-lg font-medium`}>
-                    {stock ? `Còn ${stock} sản phẩm` : 'Hết hàng'}
+                  <span className={`text-${product.stock ? 'green' : 'red'}-500 text-lg font-medium`}>
+                    {product.stock ? `Còn ${product.stock} sản phẩm` : 'Hết hàng'}
                   </span>
                   <ul className='flex justify-start items-center gap-4'>
                     <li>
-                      <a type='_black' className='w-[38px] h-[38px] hover:bg-[#059473] text-white flex justify-center items-center rounded-full bg-[#0866ff]' href="https://www.facebook.com/dinhcanh24"><FaFacebookF /></a>
+                      <a type='_black' className='w-[30px] h-[30px] hover:bg-[#059473] text-white flex justify-center items-center rounded-full bg-[#0866ff]' href="https://www.facebook.com/dinhcanh24"><FaFacebookF /></a>
                     </li>
                     <li>
-                      <a type='_black' className='w-[38px] h-[38px] hover:bg-[#059473] text-white flex justify-center items-center rounded-full bg-[#06b5d4]' href="https://zalo.me/0387444214"><SiZalo /></a>
+                      <a type='_black' className='w-[30px] h-[30px] hover:bg-[#059473] text-white flex justify-center items-center rounded-full bg-[#06b5d4]' href="https://zalo.me/0387444214"><SiZalo /></a>
                     </li>
                   </ul>
                 </div>
               </div>
               <div className='flex gap-4'>
                 {
-                  stock ? <button className='px-8 py-3 rounded-md cursor-pointer h-[50px] bg-[#fc7600] text-white'>
+                  product.stock ? <button onClick={buynow} className='px-5 py-2 rounded-md cursor-pointer bg-[#fc7600] text-white'>
                     Mua ngay
                   </button>
                     : ''
                 }
-                <Link to='#' className='px-8 py-3 rounded-md cursor-pointer h-[50px] bg-red-500 text-white'>Chat hỗ trợ</Link>
+                <Link to='#' className='px-5 py-2 rounded-md cursor-pointer bg-red-500 text-white'>Chat hỗ trợ</Link>
               </div>
             </div>
-
-
           </div>
         </div>
       </section>
@@ -217,60 +336,69 @@ const ProductDetails = () => {
                   <button onClick={() => setState('description')} className={`py-1 px-5 hover:text-white hover:bg-[#c9eee5] cursor-pointer ${state === 'description' ? 'bg-[#059473] text-white' : 'bg-slate-200 text-slate-600'} rounded-lg`}>Mô tả</button>
                 </div>
                 <div>
-                  {state === 'reviews' ? <Reviews /> : <p className='py-5 text-slate-600'>
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Error voluptatem adipisci quo dolorum impedit delectus, odit explicabo praesentium expedita veniam eveniet velit eius maxime, dolor minus earum tenetur ut. Commodi!
+                  {state === 'reviews' ? <Reviews product={product} /> : <p className='py-5 text-slate-600'>
+                    {product.description}
                   </p>}
                 </div>
               </div>
             </div>
-            <div className='w-full md:w-[30%]'>
+            <div className='hidden lg:block lg:w-[30%]'>
               <div className='pl-0 lg:pl-4 '>
                 <div className='px-3 py-2 bg-slate-200 text-slate-600 rounded-lg'>
-                  <h2 className='font-medium text-lg'>Gợi ý từ cửa hàng</h2>
+                  <h2 className='font-medium text-base'>Gợi ý từ cửa hàng</h2>
                 </div>
                 <div className='mx-auto flex flex-col gap-5 mt-3 border border-[#e9ebf0] p-3 2xl:px-15 2xl:pt-5 rounded-md'>
                   {
-                    [1, 2, 3].map((p, i) => {
+                    fromStore?.map((p, i) => {
                       return (
                         <div key={i} className='border border-[#e9ebf0] overflow-hidden group max-h-[450px] p-2 rounded-lg'>
                           <div className='relative'>
                             {
-                              discount > 0 && <div className='flex justify-center items-center absolute left-2 top-2 bg-red-500 rounded-full w-[38px] h-[38px] text-white'>
-                                {discount}%
+                              p.discount > 0 && <div className='flex justify-center items-center absolute left-2 top-2 bg-red-500 rounded-full w-[38px] h-[38px] text-white'>
+                                {p.discount}%
                               </div>
                             }
-
-
-                            <img src={`/images/products/${i + 1}.webp`} alt="" className='transition-all duration-500 group-hover:-translate-y-2 w-full h-[250px]' />
+                            <img src={p.images[0]} alt="" className='transition-all duration-500 group-hover:-translate-y-2 w-full h-[250px]' />
                             <ul className='flex w-full transition-all duration-700 justify-center items-center gap-2 absolute'>
-                              <Link className='w-[30px] h-[30px] flex justify-center items-center bg-white cursor-pointer rounded-full hover:bg-[#059473] hover:text-white hover:rotate-720 transition-all opacity-0 group-hover:opacity-100 group-hover:-translate-y-15'>
+                              <li onClick={() => add_wishlist_byId(p)} className='w-[30px] h-[30px] flex justify-center items-center bg-white cursor-pointer rounded-full hover:bg-[#059473] hover:text-white hover:rotate-720 transition-all opacity-0 group-hover:opacity-100 group-hover:-translate-y-15'>
                                 <FaRegHeart />
-                              </Link>
-                              <Link to='/product/details/new' className='w-[30px] h-[30px] flex justify-center items-center bg-white cursor-pointer rounded-full hover:bg-[#059473] hover:text-white hover:rotate-720 transition-all opacity-0 group-hover:opacity-100 group-hover:-translate-y-15'>
+                              </li>
+                              <Link to={`/product/details/${p.slug}`} className='w-[30px] h-[30px] flex justify-center items-center bg-white cursor-pointer rounded-full hover:bg-[#059473] hover:text-white hover:rotate-720 transition-all opacity-0 group-hover:opacity-100 group-hover:-translate-y-15'>
                                 <FaEye />
                               </Link>
-                              <Link className='w-[30px] h-[30px] flex justify-center items-center bg-white cursor-pointer rounded-full hover:bg-[#059473] hover:text-white hover:rotate-720 transition-all opacity-0 group-hover:opacity-100 group-hover:-translate-y-15'>
+                              <li onClick={add_cart} className='w-[30px] h-[30px] flex justify-center items-center bg-white cursor-pointer rounded-full hover:bg-[#059473] hover:text-white hover:rotate-720 transition-all opacity-0 group-hover:opacity-100 group-hover:-translate-y-15'>
                                 <RiShoppingCartLine />
-                              </Link>
+                              </li>
                             </ul>
                           </div>
-                          <Link to='/product/details/new'>
+                          <Link to={`/product/details/${p.slug}`}>
                             <div className='p-3 flex flex-col gap-1'>
-                              <h3 className='text-base md:text-[18px] font-medium line-clamp-2'>OPPO Reno14 F 5G 12GB/256GB</h3>
+                              <h3 className='text-base font-medium line-clamp-2'>{p.name}</h3>
                               <div className="mt-1">
-                                <p className="text-red-500 font-bold text-lg">
-                                  8.130.000₫
-                                </p>
-                                <div>
-                                  <span className='text-gray-400 line-through text-base'>8.830.000₫</span>
-                                  <span className='text-red-500 font-medium text-base'> -11%</span>
-                                </div>
+                                {p.discount > 0 ?
+                                  <>
+                                    <p className="text-red-500 font-bold text-base">
+                                      {formatPrice(p.price - (p.price * p.discount) / 100)}
+                                    </p>
+                                    <div>
+                                      <span className='text-gray-400 line-through text-sm'>{formatPrice(p.price)}</span>
+                                      <span className='text-red-500 font-medium text-sm'> -{p.discount}%</span>
+                                    </div>
+                                  </>
+                                  :
+                                  <p className="text-red-500 font-bold text-base">
+                                    {formatPrice(p.price)}
+                                  </p>
+                                }
                               </div>
-                              <div className="flex items-center gap-1 mt-1">
-                                <FaStar className='text-sm text-yellow-400' />
-                                <span className="text-sm font-semibold text-gray-700">4.9</span>
-                                <span className="text-xs text-gray-500">· Đã bán 11,7k</span>
-                              </div>
+                              {
+                                p.rating
+                                  ? <div className="flex items-center gap-1 mt-1">
+                                    <FaStar className='text-sm text-yellow-400' />
+                                    <span className="text-sm font-semibold text-gray-700">{p.rating}</span>
+                                  </div>
+                                  : ''
+                              }
                             </div>
                           </Link>
                         </div>
@@ -286,12 +414,12 @@ const ProductDetails = () => {
       </section>
       <section className='pb-20'>
         <div className='w-[80%] mx-auto h-full '>
-          <h2 className='text-3xl font-medium text-slate-600 py-8'>Sản phẩm liên quan</h2>
+          <h2 className='text-2xl font-medium text-slate-600 py-8'>Sản phẩm liên quan</h2>
           <div>
             <Swiper
               slidesPerView='auto'
               spaceBetween={25}
-              loop={true}
+              loop={relatedProducts.length >= 6}
               breakpoints={{
                 1280: {
                   slidesPerView: 5
@@ -317,45 +445,58 @@ const ProductDetails = () => {
               className='mySwiper'
             >
               {
-                [1, 2, 3, 4, 5, 6].map((p, i) => {
+                relatedProducts?.map((p, i) => {
                   return (
                     <SwiperSlide key={i}>
                       <div key={i} className='border border-[#e9ebf0] overflow-hidden group max-h-[450px] p-2 rounded-lg'>
                         <div className='relative'>
-                          <div className='flex justify-center items-center absolute left-2 top-2 bg-red-500 rounded-full w-[38px] h-[38px] text-white'>
-                            8%
-                          </div>
+                          {
+                            p.discount > 0 && <div className='flex justify-center items-center absolute left-2 top-2 bg-red-500 rounded-full w-[38px] h-[38px] text-white'>
+                              {p.discount}%
+                            </div>
+                          }
 
-                          <img src={`/images/products/${i + 1}.webp`} alt="" className='transition-all duration-500 group-hover:-translate-y-2 w-full h-[250px]' />
+                          <img src={p.images[0]} alt="" className='transition-all duration-500 group-hover:-translate-y-2 w-full h-[250px]' />
                           <ul className='flex w-full transition-all duration-700 justify-center items-center gap-2 absolute'>
-                            <Link className='w-[30px] h-[30px] flex justify-center items-center bg-white cursor-pointer rounded-full hover:bg-[#059473] hover:text-white hover:rotate-720 transition-all opacity-0 group-hover:opacity-100 group-hover:-translate-y-15'>
+                            <li onClick={() => add_wishlist_byId(p)} className='w-[30px] h-[30px] flex justify-center items-center bg-white cursor-pointer rounded-full hover:bg-[#059473] hover:text-white hover:rotate-720 transition-all opacity-0 group-hover:opacity-100 group-hover:-translate-y-15'>
                               <FaRegHeart />
-                            </Link>
-                            <Link to='/product/details/new' className='w-[30px] h-[30px] flex justify-center items-center bg-white cursor-pointer rounded-full hover:bg-[#059473] hover:text-white hover:rotate-720 transition-all opacity-0 group-hover:opacity-100 group-hover:-translate-y-15'>
+                            </li>
+                            <Link to={`/product/details/${p.slug}`} className='w-[30px] h-[30px] flex justify-center items-center bg-white cursor-pointer rounded-full hover:bg-[#059473] hover:text-white hover:rotate-720 transition-all opacity-0 group-hover:opacity-100 group-hover:-translate-y-15'>
                               <FaEye />
                             </Link>
-                            <Link className='w-[30px] h-[30px] flex justify-center items-center bg-white cursor-pointer rounded-full hover:bg-[#059473] hover:text-white hover:rotate-720 transition-all opacity-0 group-hover:opacity-100 group-hover:-translate-y-15'>
+                            <li onClick={add_cart} className='w-[30px] h-[30px] flex justify-center items-center bg-white cursor-pointer rounded-full hover:bg-[#059473] hover:text-white hover:rotate-720 transition-all opacity-0 group-hover:opacity-100 group-hover:-translate-y-15'>
                               <RiShoppingCartLine />
-                            </Link>
+                            </li>
                           </ul>
                         </div>
-                        <Link to='/product/details/new'>
+                        <Link to={`/product/details/${p.slug}`}>
                           <div className='p-3 flex flex-col gap-1'>
-                            <h3 className='text-base md:text-[18px] font-medium line-clamp-2'>OPPO Reno14 F 5G 12GB/256GB</h3>
+                            <h3 className='text-base font-medium line-clamp-2'>{p.name}</h3>
                             <div className="mt-1">
-                              <p className="text-red-500 font-bold text-lg">
-                                8.130.000₫
-                              </p>
-                              <div>
-                                <span className='text-gray-400 line-through text-base'>8.830.000₫</span>
-                                <span className='text-red-500 font-medium text-base'> -11%</span>
-                              </div>
+                              {p.discount > 0 ?
+                                <>
+                                  <p className="text-red-500 font-bold text-base">
+                                    {formatPrice(p.price - (p.price * p.discount) / 100)}
+                                  </p>
+                                  <div>
+                                    <span className='text-gray-400 line-through text-sm'>{formatPrice(p.price)}</span>
+                                    <span className='text-red-500 font-medium text-sm'> -{p.discount}%</span>
+                                  </div>
+                                </>
+                                :
+                                <p className="text-red-500 font-bold text-base">
+                                  {formatPrice(p.price)}
+                                </p>
+                              }
                             </div>
-                            <div className="flex items-center gap-1 mt-1">
-                              <FaStar className='text-sm text-yellow-400' />
-                              <span className="text-sm font-semibold text-gray-700">4.9</span>
-                              <span className="text-xs text-gray-500">· Đã bán 11,7k</span>
-                            </div>
+                            {
+                              p.rating
+                                ? <div className="flex items-center gap-1 mt-1">
+                                  <FaStar className='text-sm text-yellow-400' />
+                                  <span className="text-sm font-semibold text-gray-700">{p.rating}</span>
+                                </div>
+                                : ''
+                            }
                           </div>
                         </Link>
 

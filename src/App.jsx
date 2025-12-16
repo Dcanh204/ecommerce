@@ -20,6 +20,7 @@ import Order from './components/dashboard/Order';
 import ChangePassword from './components/dashboard/ChangePassword';
 import WishList from './components/dashboard/WishList';
 import OrderDetails from './components/dashboard/OrderDetails';
+import ScrollToTop from './components/ScrollToTop';
 
 const App = () => {
   const dispatch = useDispatch()
@@ -28,6 +29,7 @@ const App = () => {
   }, [dispatch])
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/shops' element={<Shop />} />

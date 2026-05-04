@@ -50,6 +50,18 @@ export const customer_review = createAsyncThunk(
   }
 )
 
+export const get_reviews = createAsyncThunk(
+  'review/get_reviews',
+  async ({ productId, currentPage }, { rejectWithValue }) => {
+    try {
+      const { data } = await api.get(`/home/products/get-reviews/${productId}?page=${currentPage}`);
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+)
+
 const productReducer = createSlice({
   name: 'product',
   initialState: {
@@ -64,9 +76,15 @@ const productReducer = createSlice({
     relatedProducts: [],
     fromStore: [],
     reviews: [],
-    totalReviw: 0,
+    totalReview: 0,
     rating_review: [],
-    successMessage: ''
+    successMessage: '',
+    loading: {
+      getProducts: false,
+      queryProducts: false,
+      productDetails: false,
+      reviews: false
+    }
   },
   reducers: {
     messageClear: (state) => {
@@ -75,27 +93,73 @@ const productReducer = createSlice({
   },
   extraReducers: builder => {
     builder
+
+      // ================= GET PRODUCTS =================
+      .addCase(getProducts.pending, (state) => {
+        state.loading.getProducts = true;
+      })
       .addCase(getProducts.fulfilled, (state, action) => {
+        state.loading.getProducts = false;
         state.products = action.payload?.products;
         state.latest_product = action.payload?.latest_product;
         state.topRate_product = action.payload?.topRate_product;
         state.discount_product = action.payload?.discount_product;
       })
+      .addCase(getProducts.rejected, (state) => {
+        state.loading.getProducts = false;
+      })
+
+
+      // ================= QUERY =================
+      .addCase(query_products.pending, (state) => {
+        state.loading.queryProducts = true;
+      })
       .addCase(query_products.fulfilled, (state, action) => {
+        state.loading.queryProducts = false;
         state.products_shop = action.payload?.products;
         state.totalProduct = action.payload?.totalProduct;
         state.parPage = action.payload?.parPage;
       })
+      .addCase(query_products.rejected, (state) => {
+        state.loading.queryProducts = false;
+      })
+
+
+      // ================= PRODUCT DETAILS =================
+      .addCase(product_details.pending, (state) => {
+        state.loading.productDetails = true;
+        state.product = {}; // reset để tránh data cũ
+      })
       .addCase(product_details.fulfilled, (state, action) => {
+        state.loading.productDetails = false;
         state.product = action.payload?.product;
         state.relatedProducts = action.payload?.relatedProducts;
         state.fromStore = action.payload?.fromStore;
       })
-      .addCase(customer_review.fulfilled, (state, action) => {
-        state.successMessage = action.payload?.message;
+      .addCase(product_details.rejected, (state) => {
+        state.loading.productDetails = false;
       })
 
 
+      // ================= REVIEWS =================
+      .addCase(get_reviews.pending, (state) => {
+        state.loading.reviews = true;
+      })
+      .addCase(get_reviews.fulfilled, (state, action) => {
+        state.loading.reviews = false;
+        state.reviews = action.payload?.reviews;
+        state.rating_review = action.payload?.rating_reviews;
+        state.totalReview = action.payload?.totalReview;
+      })
+      .addCase(get_reviews.rejected, (state) => {
+        state.loading.reviews = false;
+      })
+
+
+      // ================= ADD REVIEW =================
+      .addCase(customer_review.fulfilled, (state, action) => {
+        state.successMessage = action.payload?.message;
+      });
   }
 })
 export const { messageClear } = productReducer.actions;

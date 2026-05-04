@@ -7,23 +7,30 @@ import Rating from 'react-rating';
 import { CiStar } from 'react-icons/ci';
 import { FaStar } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
-import { customer_review, messageClear } from '../stores/reducers/productReducers';
+import { customer_review, get_reviews, messageClear, product_details } from '../stores/reducers/productReducers';
 import toast from 'react-hot-toast';
 const Reviews = ({ product }) => {
   const { userInfo } = useSelector(state => state.auth);
   const dispatch = useDispatch()
   const [currentPage, setCurrentPage] = useState(1);
-  const { successMessage } = useSelector(state => state.product)
-  const [parPage, setParPage] = useState(5);
+  const { successMessage, reviews, rating_review, totalReview } = useSelector(state => state.product)
+  const [parPage,] = useState(5);
   const [rating, setRating] = useState('');
   const [review, setReview] = useState('');
+
   useEffect(() => {
     if (successMessage) {
       toast.success(successMessage);
+      dispatch(get_reviews({
+        productId: product._id,
+        currentPage
+      }))
+      dispatch(product_details(product.slug));
+      setRating('');
+      setReview('')
       dispatch(messageClear())
     }
-  }, [successMessage, dispatch])
-
+  }, [successMessage, dispatch, product, currentPage])
   const review_submit = (e) => {
     e.preventDefault()
     const obj = {
@@ -34,93 +41,77 @@ const Reviews = ({ product }) => {
     }
     dispatch(customer_review(obj))
   }
+
+  useEffect(() => {
+    if (product._id) {
+      dispatch(get_reviews({
+        productId: product._id,
+        currentPage
+      }))
+    }
+  }, [product, currentPage, dispatch])
   return (
     <div className='mt-8'>
       <div className='flex flex-col lg:flex-row gap-5 lg:gap-30'>
         <div className='flex flex-col gap-2 justify-start items-start py-4'>
           <div>
-            <span className='font-semibold text-3xl'>4.5</span>
+            <span className='font-semibold text-3xl'>{product.rating}</span>
             <span className='font-semibold text-2xl'>/5</span>
           </div>
           <div className='flex text-xl gap-2'>
-            <RatingCustom ratings={4.5} />
+            <RatingCustom ratings={product.rating} />
           </div>
-          <p className='text-slate-600'>24 đánh giá</p>
+          <p className='text-slate-600'>{totalReview} đánh giá</p>
         </div>
         <div className='flex gap-2 flex-col py-4'>
-          <div className='flex justify-start items-center gap-5'>
-            <div className='flex gap-1 w-[93px]'>
-              <RatingTemp ratings={5} />
-            </div>
-            <div className='w-[200px] h-3.5 bg-slate-200 '>
-              <div className='h-full w-[60%] bg-[#edbb0e] '>
+          {rating_review.map((item) => {
+            const percent = totalReview
+              ? (item.sum / totalReview) * 100
+              : 0;
+
+            return (
+              <div
+                key={item.rating}
+                className="flex justify-start items-center gap-5"
+              >
+                <div className="flex gap-1 w-[93px]">
+                  <RatingTemp ratings={item.rating} />
+                </div>
+
+                <div className="w-[200px] h-3.5 bg-slate-200 rounded">
+                  <div
+                    className="h-full bg-[#edbb0e] rounded transition-all duration-300"
+                    style={{ width: `${percent}%` }}
+                  />
+                </div>
+
+                <p className="text-slate-600">{item.sum}</p>
               </div>
-            </div>
-            <p className='text-slate-600'>10</p>
-          </div>
-          <div className='flex justify-start items-center gap-5'>
-            <div className='flex gap-1 w-[93px]'>
-              <RatingTemp ratings={4} />
-            </div>
-            <div className='w-[200px] h-3.5 bg-slate-200 '>
-              <div className='h-full w-[70%] bg-[#edbb0e] '>
-              </div>
-            </div>
-            <p className='text-slate-600'>20</p>
-          </div>
-          <div className='flex justify-start items-center gap-5'>
-            <div className='flex gap-1 w-[93px]'>
-              <RatingTemp ratings={3} />
-            </div>
-            <div className='w-[200px] h-3.5 bg-slate-200 '>
-              <div className='h-full w-[20%] bg-[#edbb0e] '>
-              </div>
-            </div>
-            <p className='text-slate-600'>4</p>
-          </div>
-          <div className='flex justify-start items-center gap-5'>
-            <div className='flex gap-1 w-[93px]'>
-              <RatingTemp ratings={2} />
-            </div>
-            <div className='w-[200px] h-3.5 bg-slate-200 '>
-              <div className='h-full w-[30%] bg-[#edbb0e] '>
-              </div>
-            </div>
-            <p className='text-slate-600'>5</p>
-          </div>
-          <div className='flex justify-start items-center gap-5'>
-            <div className='flex gap-1 w-[93px]'>
-              <RatingTemp ratings={1} />
-            </div>
-            <div className='w-[200px] h-3.5 bg-slate-200 '>
-              <div className='h-full w-[10%] bg-[#edbb0e] '>
-              </div>
-            </div>
-            <p className='text-slate-600'>2</p>
-          </div>
+            );
+          })}
         </div>
       </div>
       <div>
-        <h2 className='text-slate-600 font-bold text-xl py-5'>Đánh giá sản phẩm (24)</h2>
-        <div className='flex flex-col gap-8 pb-10 pt-4'>
+        <h2 className='text-slate-600 font-bold text-xl py-5'>Đánh giá sản phẩm ({totalReview})</h2>
+        <div className='flex flex-col gap-5'>
           {
-            [1, 2, 3, 4, 5, 6].map((r, i) => <div key={i} className='flex flex-col gap-1'>
+            reviews?.map((r, i) => <div key={i} className='flex flex-col gap-1'>
               <div className='flex justify-between items-center '>
-                <div className='flex gap-1 text-base'>
-                  <RatingTemp ratings={4} />
+                <div className='flex gap-1 text-xs'>
+                  <RatingTemp ratings={r.rating} />
                 </div>
-                <span className='text-slate-600'>12-11-2025</span>
+                <span className='text-slate-600 text-sm'>{new Date(r.date).toLocaleDateString('vi-VN')}</span>
               </div>
-              <span className='text-slate-600 text-base font-medium'>Đình Cảnh</span>
-              <p className='text-slate-600'> Lorem ipsum dolor, sit amet consectetur adipisicing elit. Corporis sit unde quasi! Saepe at consectetur voluptatum ex repellendus dolor nisi facilis praesentium fuga, placeat nostrum nemo atque esse molestias aliquid.</p>
+              <span className='text-slate-600 text-sm font-bold'>{r.name}</span>
+              <p className='text-slate-600'>{r.review}</p>
             </div>)
           }
           <div className='flex justify-end items-center'>
             {
-              <Pagination
+              totalReview > 5 && <Pagination
                 pageNumber={currentPage}
                 setPageNumber={setCurrentPage}
-                totalItem={10}
+                totalItem={totalReview}
                 parPage={parPage}
                 showItem={3}
               />

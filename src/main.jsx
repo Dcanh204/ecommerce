@@ -15,7 +15,8 @@ createRoot(document.getElementById('root')).render(
           position: 'top-right',
           style: {
             background: '#283046',
-            color: 'white'
+            color: 'white',
+            fontSize: '12px'
           }
         }}
       />

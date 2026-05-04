@@ -19,6 +19,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { product_details } from '../stores/reducers/productReducers';
 import toast from 'react-hot-toast';
 import { add_to_cart, add_to_wishlist, messageClear } from '../stores/reducers/cartReducers';
+import ProductDetailsSkeleton from './ProductDetailsSkeleton';
 
 
 const ProductDetails = () => {
@@ -26,7 +27,7 @@ const ProductDetails = () => {
   const { slug } = useParams();
   const dispatch = useDispatch();
   const { userInfo } = useSelector(state => state.auth);
-  const { product, relatedProducts, fromStore } = useSelector(state => state.product);
+  const { product, relatedProducts, fromStore, totalReview, loading } = useSelector(state => state.product);
   const { successMessage, errorMessage } = useSelector(state => state.cart);
   useEffect(() => {
     dispatch(product_details(slug));
@@ -34,7 +35,6 @@ const ProductDetails = () => {
   const [quantity, setQuantity] = useState(1);
   const [image, setImage] = useState('');
   const [state, setState] = useState('reviews')
-
   useEffect(() => {
     if (successMessage) {
       toast.success(successMessage);
@@ -52,6 +52,9 @@ const ProductDetails = () => {
     } else {
       setQuantity(quantity + 1);
     }
+  }
+  if (loading.productDetails) {
+    return <ProductDetailsSkeleton />;
   }
 
   const decrement = () => {
@@ -192,9 +195,9 @@ const ProductDetails = () => {
       <section>
         <div className='w-[80%] mx-auto h-full py-3'>
           <div className='grid grid-cols-1 lg:grid-cols-2 gap-8 items-start'>
-            <div className='border border-[#e9ebf0] rounded-lg shadow-md p-2'>
-              <div className='p-10 mb-5'>
-                <img className='w-full h-[400px]' src={image ? image : product?.images?.[0]} alt="product" />
+            <div className='border border-[#e0e2ea] shadow-xs rounded-lg p-2'>
+              <div className='p-5 mb-5 flex justify-center items-center'>
+                <img className='w-[300px] h-[300px]' src={image ? image : product?.images?.[0]} alt="product" />
               </div>
               {
                 product.images && <Carousel
@@ -216,9 +219,9 @@ const ProductDetails = () => {
               <h3 className='font-semibold text-2xl text-slate-600'>{product.name}</h3>
               <div className='flex justify-start items-center gap-4'>
                 <div className='text-base flex items-center gap-2'>
-                  <Rating ratings={4.5} />
-                  <span>(24 đánh giá)</span>
+                  <Rating ratings={product.rating} />
                 </div>
+                <span>({totalReview} đánh giá)</span>
               </div>
               <h3 className=' text-base text-slate-600'> Thương hiệu: {product.brand} </h3>
               <h3 className=' text-base text-slate-600'> Tên cửa hàng: {product.shopName}</h3>
@@ -320,7 +323,7 @@ const ProductDetails = () => {
                   </button>
                     : ''
                 }
-                <Link to='#' className='px-5 py-2 rounded-md cursor-pointer bg-red-500 text-white'>Chat hỗ trợ</Link>
+                <Link to={`/dashboard/chat/${product.sellerId}`} className='px-5 py-2 rounded-md cursor-pointer bg-red-500 text-white'>Chat hỗ trợ</Link>
               </div>
             </div>
           </div>
@@ -345,7 +348,7 @@ const ProductDetails = () => {
             <div className='hidden lg:block lg:w-[30%]'>
               <div className='pl-0 lg:pl-4 '>
                 <div className='px-3 py-2 bg-slate-200 text-slate-600 rounded-lg'>
-                  <h2 className='font-medium text-base'>Gợi ý từ cửa hàng</h2>
+                  <h2 className='font-medium text-base'>Gợi ý sản phẩm</h2>
                 </div>
                 <div className='mx-auto flex flex-col gap-5 mt-3 border border-[#e9ebf0] p-3 2xl:px-15 2xl:pt-5 rounded-md'>
                   {
@@ -354,11 +357,11 @@ const ProductDetails = () => {
                         <div key={i} className='border border-[#e9ebf0] overflow-hidden group max-h-[450px] p-2 rounded-lg'>
                           <div className='relative'>
                             {
-                              p.discount > 0 && <div className='flex justify-center items-center absolute left-2 top-2 bg-red-500 rounded-full w-[38px] h-[38px] text-white'>
+                              p.discount > 0 && <div className='flex justify-center items-center absolute left-1 top-1 bg-red-500 rounded-full w-[30px] h-[30px] text-white text-xs'>
                                 {p.discount}%
                               </div>
                             }
-                            <img src={p.images[0]} alt="" className='transition-all duration-500 group-hover:-translate-y-2 w-full h-[250px]' />
+                            <img src={p.images[0]} alt="" className='transition-all duration-500 group-hover:-translate-y-2 w-full h-[190px]' />
                             <ul className='flex w-full transition-all duration-700 justify-center items-center gap-2 absolute'>
                               <li onClick={() => add_wishlist_byId(p)} className='w-[30px] h-[30px] flex justify-center items-center bg-white cursor-pointer rounded-full hover:bg-[#059473] hover:text-white hover:rotate-720 transition-all opacity-0 group-hover:opacity-100 group-hover:-translate-y-15'>
                                 <FaRegHeart />
@@ -373,7 +376,7 @@ const ProductDetails = () => {
                           </div>
                           <Link to={`/product/details/${p.slug}`}>
                             <div className='p-3 flex flex-col gap-1'>
-                              <h3 className='text-base font-medium line-clamp-2'>{p.name}</h3>
+                              <h3 className='text-sm font-medium line-clamp-2'>{p.name}</h3>
                               <div className="mt-1">
                                 {p.discount > 0 ?
                                   <>
@@ -448,15 +451,15 @@ const ProductDetails = () => {
                 relatedProducts?.map((p, i) => {
                   return (
                     <SwiperSlide key={i}>
-                      <div key={i} className='border border-[#e9ebf0] overflow-hidden group max-h-[450px] p-2 rounded-lg'>
+                      <div key={i} className='border border-[#e9ebf0] overflow-hidden group h-[330px] p-2 rounded-lg'>
                         <div className='relative'>
                           {
-                            p.discount > 0 && <div className='flex justify-center items-center absolute left-2 top-2 bg-red-500 rounded-full w-[38px] h-[38px] text-white'>
+                            p.discount > 0 && <div className='flex justify-center items-center absolute left-1 top-1 bg-red-500 rounded-full w-[30px] h-[30px] text-white text-xs'>
                               {p.discount}%
                             </div>
                           }
 
-                          <img src={p.images[0]} alt="" className='transition-all duration-500 group-hover:-translate-y-2 w-full h-[250px]' />
+                          <img src={p.images[0]} alt="" className='transition-all duration-500 group-hover:-translate-y-2 w-full h-[190px]' />
                           <ul className='flex w-full transition-all duration-700 justify-center items-center gap-2 absolute'>
                             <li onClick={() => add_wishlist_byId(p)} className='w-[30px] h-[30px] flex justify-center items-center bg-white cursor-pointer rounded-full hover:bg-[#059473] hover:text-white hover:rotate-720 transition-all opacity-0 group-hover:opacity-100 group-hover:-translate-y-15'>
                               <FaRegHeart />
@@ -471,7 +474,7 @@ const ProductDetails = () => {
                         </div>
                         <Link to={`/product/details/${p.slug}`}>
                           <div className='p-3 flex flex-col gap-1'>
-                            <h3 className='text-base font-medium line-clamp-2'>{p.name}</h3>
+                            <h3 className='text-sm font-medium line-clamp-2'>{p.name}</h3>
                             <div className="mt-1">
                               {p.discount > 0 ?
                                 <>

@@ -15,12 +15,13 @@ import NotFound from './pages/NotFound';
 import Payment from './pages/payment';
 import ProtectRoute from './utils/ProtectRoute';
 import Dashboard from './pages/Dashboard';
-import Index from './components/dashboard';
 import Order from './components/dashboard/Order';
 import ChangePassword from './components/dashboard/ChangePassword';
 import WishList from './components/dashboard/WishList';
 import OrderDetails from './components/dashboard/OrderDetails';
 import ScrollToTop from './components/ScrollToTop';
+import Chat from './components/dashboard/Chat';
+import Index from './components/dashboard/Index';
 
 const App = () => {
   const dispatch = useDispatch()
@@ -48,6 +49,8 @@ const App = () => {
             <Route path='change-password' element={<ChangePassword />} />
             <Route path='my-wishlist' element={<WishList />} />
             <Route path='order/details/:orderId' element={<OrderDetails />} />
+            <Route path='chat' element={<Chat />} />
+            <Route path='chat/:sellerId' element={<Chat />} />
           </Route>
         </Route>
         <Route path='*' element={<NotFound />} />

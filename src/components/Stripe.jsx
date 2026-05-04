@@ -3,7 +3,6 @@ import React from 'react';
 const Stripe = () => {
   return (
     <div>
-      dsfafdas
     </div>
   );
 };

@@ -44,7 +44,8 @@ const orderReducer = createSlice({
     myOrders: [],
     successMessage: '',
     errorMessage: '',
-    myOrder: {}
+    myOrder: {},
+    loading: false
   },
   reducers: {
     messageClear: (state) => {
@@ -57,8 +58,15 @@ const orderReducer = createSlice({
       .addCase(get_orders.fulfilled, (state, action) => {
         state.myOrders = action.payload?.orders
       })
+      .addCase(get_order_details.pending, (state) => {
+        state.loading = true;
+      })
       .addCase(get_order_details.fulfilled, (state, action) => {
-        state.myOrder = action.payload?.order
+        state.loading = false;
+        state.myOrder = action.payload?.order;
+      })
+      .addCase(get_order_details.rejected, (state) => {
+        state.loading = false;
       })
   }
 })

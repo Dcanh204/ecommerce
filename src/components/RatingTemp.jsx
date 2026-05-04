@@ -58,6 +58,17 @@ const RatingTemp = ({ ratings }) => {
       </>
     )
   }
+  else {
+    return (
+      <>
+        <span className='text-[#Edbb0E]'><CiStar /></span>
+        <span className='text-[#Edbb0E]'><CiStar /></span>
+        <span className='text-[#Edbb0E]'><CiStar /></span>
+        <span className='text-[#Edbb0E]'><CiStar /></span>
+        <span className='text-[#Edbb0E]'><CiStar /></span>
+      </>
+    )
+  }
 
 };
 

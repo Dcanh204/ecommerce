@@ -8,7 +8,7 @@ export const customer_register = createAsyncThunk(
   async (info, { rejectWithValue }) => {
     try {
       const { data } = await api.post('/customer/customer-register', info);
-      localStorage.setItem('accessToken', data.token)
+      localStorage.setItem('access_token', data.token)
       return data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -21,7 +21,7 @@ export const customer_login = createAsyncThunk(
   async (info, { rejectWithValue }) => {
     try {
       const { data } = await api.post('/customer/customer-login', info);
-      localStorage.setItem('accessToken', data.token)
+      localStorage.setItem('access_token', data.token)
       return data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -45,7 +45,7 @@ const authReducer = createSlice({
     successMessage: '',
     errorMessage: '',
     loading: false,
-    userInfo: decoded(localStorage.getItem('accessToken'))
+    userInfo: decoded(localStorage.getItem('access_token'))
   },
   reducers: {
     messageClear: (state) => {
@@ -62,7 +62,7 @@ const authReducer = createSlice({
         state.loading = true;
       })
       .addCase(customer_register.fulfilled, (state, action) => {
-        const userInfo = decoded(localStorage.getItem('accessToken'))
+        const userInfo = decoded(localStorage.getItem('access_token'))
         state.loading = false;
         state.successMessage = action.payload?.message
         state.userInfo = userInfo;
@@ -76,7 +76,7 @@ const authReducer = createSlice({
         state.loading = true;
       })
       .addCase(customer_login.fulfilled, (state, action) => {
-        const userInfo = decoded(localStorage.getItem('accessToken'))
+        const userInfo = decoded(localStorage.getItem('access_token'))
         state.loading = false;
         state.successMessage = action.payload?.message
         state.userInfo = userInfo

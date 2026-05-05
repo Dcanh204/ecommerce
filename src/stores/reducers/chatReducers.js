@@ -49,6 +49,9 @@ const chatReducer = createSlice({
     messageClear: (state) => {
       state.errorMessage = '';
       state.successMessage = ''
+    },
+    updateMessage: (state, action) => {
+      state.messages = [...state.messages, action.payload]
     }
   },
 
@@ -70,6 +73,7 @@ const chatReducer = createSlice({
         }
         state.my_friends = tempFriends;
         state.messages = [...state.messages, payload.message];
+        state.successMessage = "Gửi tin nhắn thành công"
       })
       .addCase(get_friends.fulfilled, (state, action) => {
         state.my_friends = action.payload.myFriends;
@@ -79,5 +83,5 @@ const chatReducer = createSlice({
   }
 })
 
-export const { messageClear } = chatReducer.actions;
+export const { messageClear, updateMessage } = chatReducer.actions;
 export default chatReducer.reducer;

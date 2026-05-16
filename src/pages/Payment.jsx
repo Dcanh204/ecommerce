@@ -35,9 +35,9 @@ const Payment = () => {
   const handleVnpayPayment = async () => {
     try {
       setVnpayLoader(true)
-      const { data } = await axios.post('http://localhost:5000/api/order/vnpay-payment', { totalPrice, orderId }, { withCredentials: true });
-      if (data.paymentUrl) {
-        window.location.href = data.paymentUrl;
+      const { data } = await axios.post('http://localhost:5000/api/order/create-vnpay-payment', { amount: totalPrice, orderId }, { withCredentials: true });
+      if (data.url) {
+        window.location.href = data.url;
       }
     } catch (error) {
       console.log(error.response?.data || error.message);

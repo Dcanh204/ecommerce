@@ -26,6 +26,7 @@ import Chatbot from './components/chatbot/Chatbot';
 import io from 'socket.io-client';
 import { set_active_sellers } from './stores/reducers/chatReducers';
 import ConfirmOrder from './pages/ConfirmOrder';
+import VnpayConfirm from './pages/VnpayConfirm';
 
 export const SocketContext = createContext();
 
@@ -63,7 +64,8 @@ const App = () => {
           <Route path='/cart' element={<Cart />} />
           <Route path='/shipping' element={<Shipping />} />
           <Route path='/product/details/:slug' element={<ProductDetails />} />
-          <Route path='/order/confirm?' element={<ConfirmOrder />} />
+          <Route path='/order/confirm' element={<ConfirmOrder />} />
+          <Route path='/payment/vnpay-return' element={<VnpayConfirm />} />
           <Route path='/login' element={<Login />} />
           <Route path='/category/:slug' element={<CategoryShop />} />
           <Route path='/search' element={<SearchProduct />} />

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { BsCartXFill } from 'react-icons/bs';
 import { FaEye, FaShoppingCart } from 'react-icons/fa';
 import { FaCartFlatbedSuitcase } from 'react-icons/fa6';

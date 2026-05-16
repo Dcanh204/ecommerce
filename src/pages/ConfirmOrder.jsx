@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/set-state-in-effect */
+
 import React, { useEffect, useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js'
 import { Link } from 'react-router-dom';
@@ -65,29 +65,70 @@ const ConfirmOrder = () => {
   }
 
   useEffect(() => {
-    if (message === 'succeeded') {
-      update_payment()
-    }
-  }, [message])
+    const initConfirm = async () => {
+      const params = new URLSearchParams(window.location.search);
+      const vnp_ResponseCode = params.get('vnp_ResponseCode');
+      const paymentIntentClientSecret = params.get('payment_intent_client_secret');
 
-  useEffect(() => {
-    update_payment()
-  }, [])
+      if (vnp_ResponseCode) {
+        // Xử lý VNPay
+        try {
+          const { data } = await axios.get(`http://localhost:5000/api/order/vnpay-return${window.location.search}`, { withCredentials: true });
+          if (data.code === '00') {
+            setMessage('succeeded');
+            localStorage.removeItem('orderId');
+          } else {
+            setMessage('failed');
+          }
+        } catch (error) {
+          setMessage('failed');
+          console.log(error)
+        }
+        setLoader(false);
+      } else if (paymentIntentClientSecret) {
+        // Xử lý Stripe: Logic cập nhật DB đã nằm trong useEffect [stripe] gọi update_payment
+        if (message === 'succeeded') {
+          update_payment();
+        }
+      } else {
+        // Trường hợp không có param nào (ví dụ reload trang hoặc COD)
+        const orderId = localStorage.getItem('orderId');
+        if (orderId) update_payment();
+        else setLoader(false);
+      }
+    };
 
-
+    initConfirm();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [message, stripe, window.location.search]);
 
   return (
-    <div className='w-screen h-screen flex justify-center items-center flex-col gap-4'>
+    <div className='w-screen h-screen flex justify-center items-center flex-col gap-4 bg-slate-50'>
       {
-        (message === 'failed' || message === 'processing') ? <>
-          <img src='/images/error.png' alt="" />
-          <Link className='px-5 py-2 bg-green-500 rounded-sm text-white' to="/dashboard/my-orders">Quay lại trang đơn hàng </Link>
-        </> : message === 'succeeded' ? loader ? <FadeLoader /> : <>
-          <img src='/images/success.png' alt="" />
-          <Link className='px-5 py-2 bg-green-500 rounded-sm text-white' to="/dashboard/my-orders">Quay lại trang đơn hàng </Link>
-        </> : <FadeLoader />
+        (message === 'failed' || message === 'processing') ? (
+          <div className='flex flex-col items-center gap-4 p-8 bg-white rounded-2xl shadow-sm'>
+            <img className='w-24 h-24 object-contain' src='/images/error.png' alt="error" />
+            <div className='text-center'>
+              <h2 className='text-2xl font-bold text-slate-800 mb-2'>
+                {message === 'processing' ? 'Đang xử lý giao dịch...' : 'Thanh toán thất bại!'}
+              </h2>
+              <p className='text-slate-500 mb-6'>Vui lòng kiểm tra lại lịch sử đơn hàng hoặc thử lại sau.</p>
+            </div>
+            <Link className='px-8 py-3 bg-[#059473] hover:bg-[#047d61] transition-all rounded-lg text-white font-bold shadow-lg shadow-green-100' to="/dashboard/my-orders">Quay lại trang đơn hàng </Link>
+          </div>
+        ) : message === 'succeeded' ? (
+          loader ? <FadeLoader color='#059473' /> : (
+            <div className='flex flex-col items-center gap-4 p-8 bg-white rounded-2xl shadow-sm animate-in fade-in zoom-in duration-300'>
+              <img className='w-24 h-24 object-contain' src='/images/success.png' alt="success" />
+              <div className='text-center'>
+                <h2 className='text-2xl font-bold text-[#059473] mb-2'>Thanh toán thành công!</h2>
+                <p className='text-slate-500 mb-6'>Cảm ơn bạn đã tin tưởng mua sắm. Đơn hàng của bạn đang được hệ thống xử lý.</p>
+              </div>
+              <Link className='px-8 py-3 bg-[#059473] hover:bg-[#047d61] transition-all rounded-lg text-white font-bold shadow-lg shadow-green-100' to="/dashboard/my-orders">Quay lại trang đơn hàng </Link>
+            </div>
+          )
+        ) : <FadeLoader color='#059473' />
       }
-
     </div>
   );
 };

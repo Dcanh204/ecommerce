@@ -1,12 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useContext } from 'react';
 import { AiOutlineMessage, AiOutlinePlus } from 'react-icons/ai';
 import { GrEmoji } from 'react-icons/gr';
 import { IoSend } from 'react-icons/io5';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useParams } from 'react-router-dom';
-import io from 'socket.io-client';
 import moment from 'moment';
 import 'moment/locale/vi';
+import { SocketContext } from '../../App';
 
 import {
   isSameSender,
@@ -32,26 +32,12 @@ const Chat = () => {
   const { sellerId } = useParams();
 
   const { userInfo } = useSelector(state => state.auth);
-  const { messages, my_friends, current_friend, successMessage } = useSelector(state => state.chat);
+  const { messages, my_friends, current_friend, successMessage, activeSellers } = useSelector(state => state.chat);
+  const socket = useContext(SocketContext);
 
   const [text, setText] = useState('');
   const messageEndRef = useRef(null);
-  const socketRef = useRef(null);
   const [receiverMessage, setReceiverMessage] = useState('');
-  const [activeSeller, setActiveSeller] = useState([])
-
-  // SOCKET INIT
-  useEffect(() => {
-    if (!userInfo?.id) return;
-
-    socketRef.current = io(import.meta.env.VITE_SOCKET_URL);
-
-    socketRef.current.emit('add_user', userInfo.id, userInfo);
-
-    return () => {
-      socketRef.current.disconnect();
-    };
-  }, [userInfo]);
 
   // AUTO SCROLL
   useEffect(() => {
@@ -90,33 +76,26 @@ const Chat = () => {
   };
 
   useEffect(() => {
-    if (!socketRef.current) return;
-
-    const socket = socketRef.current;
+    if (!socket) return;
 
     socket.on('receive_message', (msg) => {
       setReceiverMessage(msg);
     });
 
-    socket.on('activeSeller', (sellers) => {
-      setActiveSeller(sellers);
-    });
-
     return () => {
       socket.off('receive_message');
-      socket.off('activeSeller');
     };
-  }, []);
+  }, [socket]);
 
-  const isOnline = activeSeller.some(
+  const isOnline = activeSellers.some(
     c => c.sellerId === current_friend.fdId
   );
   useEffect(() => {
-    if (successMessage) {
-      socketRef.current?.emit('send_customer_message', messages[messages.length - 1]);
+    if (successMessage && socket) {
+      socket.emit('send_customer_message', messages[messages.length - 1]);
       dispatch(messageClear())
     }
-  }, [messages, successMessage, dispatch])
+  }, [messages, successMessage, dispatch, socket])
 
   useEffect(() => {
     if (receiverMessage) {
@@ -131,8 +110,8 @@ const Chat = () => {
   }, [receiverMessage, dispatch, sellerId, userInfo.id])
 
   useEffect(() => {
-    socketRef.current?.emit('request_active');
-  }, []);
+    socket?.emit('request_active');
+  }, [socket]);
   return (
     <div className='bg-white p-3 rounded-md'>
       <div className='w-full flex'>
@@ -154,7 +133,7 @@ const Chat = () => {
                 >
                   <div className='w-[30px] h-[30px] rounded-full relative'>
                     {
-                      activeSeller.some(c => c.sellerId === f.fdId) && <div className='w-2.5 h-2.5 rounded-full bg-green-500 absolute right-0 bottom-0'></div>
+                      activeSellers.some(c => c.sellerId === f.fdId) && <div className='w-2.5 h-2.5 rounded-full bg-green-500 absolute right-0 bottom-0'></div>
                     }
                     <img src={f.image} alt="" />
                   </div>
@@ -324,5 +303,7 @@ const Chat = () => {
     </div>
   );
 };
+
+
 
 export default Chat;

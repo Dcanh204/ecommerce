@@ -55,8 +55,15 @@ const orderReducer = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(get_orders.pending, (state) => {
+        state.loading = true;
+      })
       .addCase(get_orders.fulfilled, (state, action) => {
-        state.myOrders = action.payload?.orders
+        state.loading = false;
+        state.myOrders = action.payload?.orders;
+      })
+      .addCase(get_orders.rejected, (state) => {
+        state.loading = false;
       })
       .addCase(get_order_details.pending, (state) => {
         state.loading = true;

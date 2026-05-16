@@ -113,7 +113,8 @@ const Shipping = () => {
           state: {
             items,
             totalPrice: price + shipping_fee,
-            orderId: result.orderId
+            orderId: result.orderId,
+            orderDate: new Date().toISOString()
           }
         });
 

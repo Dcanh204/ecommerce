@@ -1,17 +1,18 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BsCartXFill } from 'react-icons/bs';
 import { FaEye, FaShoppingCart } from 'react-icons/fa';
 import { FaCartFlatbedSuitcase } from 'react-icons/fa6';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { get_dashboard_data } from '../../stores/reducers/dashboardReducer';
-import { translateDeliveryStatus, translatePaymentStatus } from './../../utils/TranslateStatus';
+import Skeleton from '../../pages/Skelator';
+import StatusBadge from '../StatusBadge';
 
 const Index = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { userInfo } = useSelector(state => state.auth)
-  const { recentOrders, totalOrder, totalPendingOrder, totalCancelledOrder } = useSelector(state => state.dashboard);
+  const { recentOrders, totalOrder, totalPendingOrder, totalCancelledOrder, loader } = useSelector(state => state.dashboard);
   useEffect(() => {
     dispatch(get_dashboard_data(userInfo.id))
   }, [dispatch, userInfo])
@@ -25,8 +26,9 @@ const Index = () => {
     let items = order.products.reduce((sum, item) => sum + item.quantity, 0)
     navigate('/payment', {
       state: {
-        price: order.price,
+        totalPrice: order.price,
         orderId: order._id,
+        orderDate: order.date,
         items
       }
     })
@@ -40,7 +42,7 @@ const Index = () => {
             <span className='text-lg text-green-800'><FaShoppingCart /></span>
           </div>
           <div className='flex flex-col justify-start items-center text-slate-600'>
-            <h2 className='text-lg font-bold'>{totalOrder}</h2>
+            <h2 className='text-lg font-bold'>{loader ? <Skeleton className="h-6 w-10" /> : totalOrder}</h2>
             <span>Đơn hàng</span>
           </div>
         </div>
@@ -50,7 +52,7 @@ const Index = () => {
             <span className='text-lg text-green-800'><FaCartFlatbedSuitcase /></span>
           </div>
           <div className='flex flex-col justify-start items-center text-slate-600'>
-            <h2 className='text-lg font-bold'>{totalPendingOrder}</h2>
+            <h2 className='text-lg font-bold'>{loader ? <Skeleton className="h-6 w-10" /> : totalPendingOrder}</h2>
             <span>Đơn hàng chờ xử lý</span>
           </div>
         </div>
@@ -60,7 +62,7 @@ const Index = () => {
             <span className='text-lg text-green-800'><BsCartXFill /></span>
           </div>
           <div className='flex flex-col justify-start items-center text-slate-600'>
-            <h2 className='text-lg font-bold'>{totalCancelledOrder}</h2>
+            <h2 className='text-lg font-bold'>{loader ? <Skeleton className="h-6 w-10" /> : totalCancelledOrder}</h2>
             <span>Đơn hàng đã hủy</span>
           </div>
         </div>
@@ -82,21 +84,37 @@ const Index = () => {
             </thead>
             <tbody>
               {
-                recentOrders.map((item, i) => <tr key={i} className='border-b border-[#e1e8f0]'>
-                  <td className='px-6 py-4 whitespace-nowrap'> MDH - {item._id?.slice(-6).toUpperCase()}</td>
-                  <td className='px-6 py-4 whitespace-nowrap'>{formatPrice(item.price)}</td>
-                  <td className='px-6 py-4 whitespace-nowrap'>{translatePaymentStatus(item.payment_status)}</td>
-                  <td className='px-6 py-4 whitespace-nowrap'>{translateDeliveryStatus(item.delivery_status)}</td>
-                  <td className='px-6 py-4 whitespace-nowrap flex items-center gap-3'>
-                    <Link to={`/dashboard/order/details/${item._id}`}>
-                      <span className='bg-green-200 text-green-800 h-6 px-2 inline-flex justify-center items-center rounded-md'><FaEye /></span>
-                    </Link>
-                    {
-                      item.payment_status !== 'paid' && <span onClick={() => redirect_payment(item)} className='bg-green-200 text-green-800 h-6 px-2 inline-flex justify-center items-center rounded-md cursor-pointer'>Thanh toán</span>
-                    }
+                loader ? (
+                  [...Array(3)].map((_, i) => (
+                    <tr key={i} className='border-b border-[#e1e8f0]'>
+                      <td className='px-6 py-4 whitespace-nowrap'><Skeleton className="h-4 w-24" /></td>
+                      <td className='px-6 py-4 whitespace-nowrap'><Skeleton className="h-4 w-16" /></td>
+                      <td className='px-6 py-4 whitespace-nowrap'><Skeleton className="h-4 w-20" /></td>
+                      <td className='px-6 py-4 whitespace-nowrap'><Skeleton className="h-4 w-20" /></td>
+                      <td className='px-6 py-4 whitespace-nowrap'><Skeleton className="h-4 w-12" /></td>
+                    </tr>
+                  ))
+                ) : (
+                  recentOrders.map((item, i) => <tr key={i} className='border-b border-[#e1e8f0]'>
+                    <td className='px-6 py-4 whitespace-nowrap'> MDH - {item._id?.slice(-6).toUpperCase()}</td>
+                    <td className='px-6 py-4 whitespace-nowrap font-medium'>{formatPrice(item.price)}</td>
+                    <td className='px-6 py-4 whitespace-nowrap'>
+                      <StatusBadge type="payment" status={item.payment_status} />
+                    </td>
+                    <td className='px-6 py-4 whitespace-nowrap'>
+                      <StatusBadge type="delivery" status={item.delivery_status} />
+                    </td>
+                    <td className='px-6 py-4 whitespace-nowrap flex items-center gap-3'>
+                      <Link to={`/dashboard/order/details/${item._id}`}>
+                        <span className='bg-green-200 text-green-800 h-6 px-2 inline-flex justify-center items-center rounded-md'><FaEye /></span>
+                      </Link>
+                      {
+                        item.payment_status !== 'paid' && <span onClick={() => redirect_payment(item)} className='bg-green-200 text-green-800 h-6 px-2 inline-flex justify-center items-center rounded-md cursor-pointer'>Thanh toán</span>
+                      }
 
-                  </td>
-                </tr>)
+                    </td>
+                  </tr>)
+                )
               }
 
             </tbody>

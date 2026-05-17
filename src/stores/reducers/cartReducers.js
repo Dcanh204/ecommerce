@@ -109,6 +109,7 @@ const cartReducer = createSlice({
     outOfStockProduct: [],
     successMessage: '',
     errorMessage: '',
+    loader: false,
     buy_product_item: 0,
   },
   reducers: {
@@ -123,14 +124,23 @@ const cartReducer = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(add_to_cart.pending, (state) => {
+        state.loader = true;
+      })
       .addCase(add_to_cart.fulfilled, (state, action) => {
+        state.loader = false;
         state.successMessage = action.payload?.message;
         state.cart_product_count = state.cart_product_count + 1;
       })
       .addCase(add_to_cart.rejected, (state, action) => {
+        state.loader = false;
         state.errorMessage = action.payload?.message;
       })
+      .addCase(get_cart_product.pending, (state) => {
+        state.loader = true;
+      })
       .addCase(get_cart_product.fulfilled, (state, action) => {
+        state.loader = false;
         state.cart_products = action.payload?.cart_products;
         state.shipping_fee = action.payload?.shipping_fee;
         state.price = action.payload?.price;

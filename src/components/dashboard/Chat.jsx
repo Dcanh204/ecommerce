@@ -135,7 +135,7 @@ const Chat = () => {
                     {
                       activeSellers.some(c => c.sellerId === f.fdId) && <div className='w-2.5 h-2.5 rounded-full bg-green-500 absolute right-0 bottom-0'></div>
                     }
-                    <img src={f.image} alt="" />
+                    <img src={f.image ? f.image : '/images/user.png'} alt="" />
                   </div>
                   <span className='text-sm'>{f.name}</span>
                 </Link>
@@ -159,7 +159,7 @@ const Chat = () => {
                       <div className='w-2.5 h-2.5 rounded-full bg-green-500 absolute right-0 bottom-0'></div>
                     )}
 
-                    <img src={current_friend.image} alt="" />
+                    <img src={current_friend.image ? current_friend.image : '/images/user.png'} alt="" />
                   </div>
 
                   <div>

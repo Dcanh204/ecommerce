@@ -33,28 +33,45 @@ const Category = () => {
     }
   };
   return (
-    <div className='w-[90%] mt-6 mx-auto'>
-      <div className='w-full flex justify-center items-center flex-col text-slate-600 pb-5 md:pb-[35px]'>
-        <h2 className='text-center text-xl md:text-2xl font-bold'>Danh mục hàng đầu</h2>
-        <div className='w-[100px] h-0.5 bg-[#059473] mt-4'></div>
+    <div className='w-[90%] lg:w-[85%] mt-12 mx-auto'>
+      {/* Header Section */}
+      <div className='w-full flex justify-between'>
+        <div className='w-full flex justify-center items-center flex-col text-slate-600 pb-5 md:pb-[45px]'>
+          <h2 className='text-center font-bold text-xl md:text-3xl'>Danh mục nổi bật</h2>
+          <div className='w-[100px] h-0.5 bg-[#059473] mt-4'></div>
+        </div>
       </div>
-      <Carousel
-        responsive={responsive}
-        autoPlay={true}
-        infinite={true}
-        transitionDuration={500}
-      >
-        {
-          categories.map((c, i) => <Link to={`/category/${c.slug}`} className='h-[185px] block border border-slate-100' key={i}>
-            <div className='w-full h-full relative p-3'>
-              <img src={c.image} alt="" />
-              <div className='absolute bottom-4 w-full mx-auto font-bold left-0 flex justify-center items-center'>
-                <span className='py-0.5 px-6 bg-[#b9b7b7]/80 text-white rounded-md text-sm'>{c.category_name}</span>
-              </div>
-            </div>
-          </Link>)
-        }
-      </Carousel>
+
+      <div className='relative'>
+        <Carousel
+          responsive={responsive}
+          autoPlay={true}
+          infinite={true}
+          transitionDuration={500}
+          arrows={true}
+        >
+          {
+            categories.map((c, i) => (
+              <Link to={`/category/${c.slug}`} className='block px-2 group' key={i}>
+                <div className='bg-white rounded-2xl p-5 border border-slate-100 shadow-sm hover:shadow-xl hover:border-[#059473]/30 transition-all duration-300 flex flex-col items-center gap-4 group-hover:-translate-y-2'>
+                  <div className='w-full aspect-square bg-slate-50 rounded-xl overflow-hidden flex items-center justify-center p-4 group-hover:bg-white transition-colors duration-300'>
+                    <img
+                      src={c.image}
+                      alt={c.category_name}
+                      className='w-full h-full object-contain transition-transform duration-500 group-hover:scale-110'
+                    />
+                  </div>
+                  <div className='text-center w-full'>
+                    <span className='font-bold text-slate-700 text-sm md:text-base group-hover:text-[#059473] transition-colors truncate block'>
+                      {c.category_name}
+                    </span>
+                  </div>
+                </div>
+              </Link>
+            ))
+          }
+        </Carousel>
+      </div>
     </div>
   );
 };

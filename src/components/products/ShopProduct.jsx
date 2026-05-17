@@ -30,7 +30,7 @@ const ShopProduct = ({ products }) => {
   useEffect(() => {
     if (successMessage) {
       toast.success(successMessage);
-      dispatch(messageClear())
+      dispatch(messageClear());
     }
     if (errorMessage) {
       toast.error(errorMessage);

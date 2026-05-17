@@ -12,12 +12,13 @@ import Pagination from '../components/Pagination';
 import { useDispatch, useSelector } from 'react-redux';
 import { getProducts, query_products } from '../stores/reducers/productReducers';
 import { useParams } from 'react-router-dom';
+import Skeleton from './Skelator';
 
 const CategoryShop = () => {
   const dispatch = useDispatch();
   const { slug } = useParams();
   const { categories } = useSelector(state => state.category)
-  const { latest_product, products_shop, totalProduct, parPage } = useSelector(state => state.product)
+  const { latest_product, products_shop, totalProduct, parPage, loading } = useSelector(state => state.product)
   useEffect(() => {
     dispatch(getProducts())
   }, [dispatch])
@@ -149,7 +150,18 @@ const CategoryShop = () => {
                   </div>
                 </div>
                 <div className='pb-8'>
-                  <ShopProduct products={products_shop} />
+                  {
+                    loading.queryProducts ? (
+                      <div className='w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3'>
+                        {[...Array(10)].map((_, i) => (
+                          <div key={i} className='border border-[#e9ebf0] p-2 rounded-lg'>
+                            <Skeleton className="h-[190px] w-full mb-3" />
+                            <Skeleton className="h-4 w-full mb-2" /><Skeleton className="h-4 w-1/2" />
+                          </div>
+                        ))}
+                      </div>
+                    ) : <ShopProduct products={products_shop} />
+                  }
                 </div>
                 <div className='flex justify-center items-center'>
                   {totalProduct > parPage && <Pagination

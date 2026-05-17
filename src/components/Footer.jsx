@@ -1,66 +1,99 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { FaFacebookF, FaInstagram, FaTwitter, FaYoutube, FaEnvelope, FaPhoneAlt, FaMapMarkerAlt } from 'react-icons/fa';
 
 const Footer = () => {
   return (
-    <footer className='bg-[#f3f6fa]'>
-      <div className='w-[90%] flex flex-wrap mx-auto py-16 md:pb-10 lg:pb-16 '>
-        <div className='w-full md:w-3/12 lg:w-4/12'>
-          <div className='flex flex-col gap-2'>
-            <img className='w-[190px] h-[70px]' src="/images/logo.png" alt="logo" />
-            <ul className='flex flex-col gap-2 text-sm'>
-              <li>Address: Di Trạch, Hoài Đức,  Bắc Từ Liêm, Hà Nội</li>
-              <li>Điện thoại: 0387444214</li>
-              <li>Email: dinhcanhh2004@gmail.com</li>
+    <footer className='bg-[#f3f6fa] border-t border-gray-200'>
+      <div className='w-[90%] lg:w-[85%] mx-auto py-12'>
+        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12'>
+
+          {/* Cột 1: Thông tin thương hiệu */}
+          <div className='flex flex-col gap-6'>
+            <img className='w-[160px] h-auto' src="/images/logo.png" alt="logo" />
+            <p className='text-gray-600 text-sm leading-relaxed'>
+              Easy Shop - Nền tảng mua sắm trực tuyến uy tín, cung cấp sản phẩm chất lượng với trải nghiệm tuyệt vời nhất.
+            </p>
+            <ul className='flex flex-col gap-4 text-sm text-gray-700'>
+              <li className='flex items-start gap-3'>
+                <FaMapMarkerAlt className='text-[#059473] mt-1' />
+                <span>Di Trạch, Hoài Đức, Bắc Từ Liêm, Hà Nội</span>
+              </li>
+              <li className='flex items-center gap-3'>
+                <FaPhoneAlt className='text-[#059473]' />
+                <span>0387444214</span>
+              </li>
+              <li className='flex items-center gap-3'>
+                <FaEnvelope className='text-[#059473]' />
+                <span>dinhcanhh2004@gmail.com</span>
+              </li>
             </ul>
           </div>
-        </div>
-        <div className='w-full md:w-8/12 lg:w-4/12'>
-          <div className='flex justify-start md:justify-center mt-6 md:mt-0 w-full'>
-            <div className='w-full'>
-              <h2 className='text-base font-bold mb-2'>Liên kết hữu ích</h2>
-              <div className='w-full md:flex mt-5 md:mt-0 md:justify-between gap-8 lg:gap-10'>
-                <ul className='flex flex-col gap-2 text-slate-600 font-semibold text-sm'>
-                  <li><Link to='#'>Giới thiệu</Link></li>
-                  <li><Link to='#'>Cửa hàng</Link></li>
-                  <li><Link to='#'>Thông tin phân tích</Link></li>
-                  <li><Link to='#'>Gửi khiếu nại</Link></li>
-                  <li><Link to='#'>Tìm siêu thị</Link></li>
-                  <li><Link to='#'>Chính sách bảo mật</Link></li>
-                  <li><Link to='#'>Blog</Link></li>
-                </ul>
-                <ul className='hidden md:flex flex-col gap-2 text-slate-600 font-semibold text-sm'>
-                  <li><Link to='#'>Tích điểm Quà tặng VIP</Link></li>
-                  <li><Link to='#'>Lịch sử mua hàng</Link></li>
-                  <li><Link to='#'>Đăng ký bán hàng </Link></li>
-                  <li><Link to='#'>Chính sách bảo hành</Link></li>
-                  <li><Link to='#'>Blog</Link></li>
-                </ul>
-              </div>
-            </div>
 
+          {/* Cột 2: Liên kết hữu ích */}
+          <div>
+            <h2 className='text-lg font-bold text-gray-800 mb-6 relative after:content-[""] after:absolute after:w-12 after:h-1 after:bg-[#059473] after:left-0 after:-bottom-2'>
+              Về chúng tôi
+            </h2>
+            <ul className='flex flex-col gap-3 text-gray-600 text-sm'>
+              <li><Link to='#' className='hover:text-[#059473] hover:translate-x-1 transition-all inline-block'>Giới thiệu</Link></li>
+              <li><Link to='#' className='hover:text-[#059473] hover:translate-x-1 transition-all inline-block'>Cửa hàng</Link></li>
+              <li><Link to='#' className='hover:text-[#059473] hover:translate-x-1 transition-all inline-block'>Chính sách bảo mật</Link></li>
+              <li><Link to='#' className='hover:text-[#059473] hover:translate-x-1 transition-all inline-block'>Điều khoản sử dụng</Link></li>
+              <li><Link to='#' className='hover:text-[#059473] hover:translate-x-1 transition-all inline-block'>Blog</Link></li>
+            </ul>
           </div>
-        </div>
 
-        <div className='w-full mt-6 ml-0 lg:ml-20 lg:mt-0 lg:w-3/12'>
-          <div className='w-full flex flex-col justify-start gap-5'>
-            <h2 className='font-bold text-base lg:mb-2 '>Tham gia cùng chúng tôi</h2>
-            <span className='text-sm'>Nhận email cập nhật về các ưu đãi mới nhất và mua sắm đặc biệt của bạn</span>
-            <div className='w-full h-8 bg-white border border-slate-400 relative'>
-              <form>
+          {/* Cột 3: Hỗ trợ khách hàng */}
+          <div>
+            <h2 className='text-lg font-bold text-gray-800 mb-6 relative after:content-[""] after:absolute after:w-12 after:h-1 after:bg-[#059473] after:left-0 after:-bottom-2'>
+              Hỗ trợ khách hàng
+            </h2>
+            <ul className='flex flex-col gap-3 text-gray-600 text-sm'>
+              <li><Link to='#' className='hover:text-[#059473] hover:translate-x-1 transition-all inline-block'>Tích điểm Quà tặng VIP</Link></li>
+              <li><Link to='#' className='hover:text-[#059473] hover:translate-x-1 transition-all inline-block'>Lịch sử mua hàng</Link></li>
+              <li><Link to='#' className='hover:text-[#059473] hover:translate-x-1 transition-all inline-block'>Chính sách bảo hành</Link></li>
+              <li><Link to='#' className='hover:text-[#059473] hover:translate-x-1 transition-all inline-block'>Gửi khiếu nại</Link></li>
+              <li><Link to='#' className='hover:text-[#059473] hover:translate-x-1 transition-all inline-block'>Tìm siêu thị</Link></li>
+            </ul>
+          </div>
+
+          {/* Cột 4: Newsletter */}
+          <div className='flex flex-col gap-6'>
+            <h2 className='text-lg font-bold text-gray-800 mb-1 relative after:content-[""] after:absolute after:w-12 after:h-1 after:bg-[#059473] after:left-0 after:-bottom-2'>
+              Tham gia cùng chúng tôi
+            </h2>
+            <p className='text-sm text-gray-600'>Nhận email cập nhật về các ưu đãi mới nhất và mua sắm đặc biệt của bạn.</p>
+            <div className='w-full'>
+              <form className='relative flex'>
                 <input
                   placeholder='Nhập email...'
-                  type="text"
-                  className='h-full bg-transparent w-full pl-3 outline-none py-1 pr-16'
+                  type="email"
+                  className='w-full px-4 py-2.5 bg-white border border-gray-300 rounded-l-md outline-none focus:border-[#059473] transition-colors text-sm'
                 />
-                <button className='text-sm h-full absolute top-0 right-0 bg-[#059473] text-white uppercase px-4'>
-                  Gửi
+                <button className='bg-[#059473] hover:bg-[#047d61] text-white px-5 py-2.5 rounded-r-md transition-all text-sm font-semibold uppercase whitespace-nowrap'>
+                  Đăng ký
                 </button>
               </form>
             </div>
+            {/* Social Links */}
+            <div className='flex gap-4 mt-2'>
+              <a href="#" className='w-9 h-9 flex items-center justify-center bg-white border border-gray-300 rounded-full text-gray-600 hover:bg-[#059473] hover:text-white hover:border-[#059473] transition-all'>
+                <FaFacebookF size={14} />
+              </a>
+              <a href="#" className='w-9 h-9 flex items-center justify-center bg-white border border-gray-300 rounded-full text-gray-600 hover:bg-[#059473] hover:text-white hover:border-[#059473] transition-all'>
+                <FaInstagram size={14} />
+              </a>
+              <a href="#" className='w-9 h-9 flex items-center justify-center bg-white border border-gray-300 rounded-full text-gray-600 hover:bg-[#059473] hover:text-white hover:border-[#059473] transition-all'>
+                <FaTwitter size={14} />
+              </a>
+              <a href="#" className='w-9 h-9 flex items-center justify-center bg-white border border-gray-300 rounded-full text-gray-600 hover:bg-[#059473] hover:text-white hover:border-[#059473] transition-all'>
+                <FaYoutube size={14} />
+              </a>
+            </div>
           </div>
-        </div>
 
+        </div>
       </div>
     </footer>
   );

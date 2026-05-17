@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import React, { useEffect, useState, createContext } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Home from './pages/Home';
@@ -28,6 +29,7 @@ import { set_active_sellers } from './stores/reducers/chatReducers';
 import ConfirmOrder from './pages/ConfirmOrder';
 import VnpayConfirm from './pages/VnpayConfirm';
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const SocketContext = createContext();
 
 const App = () => {
